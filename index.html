@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タイムシート記入トレーナー - 原画研修</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper-bg: #fcfaf2;
+            --sheet-line: #4b7058; /* アニメタイムシート特有の緑がかった印刷線 */
+            --sheet-line-bold: #2d4c38;
+            --pencil-black: #222222;
+            --pencil-red: #d93829;
+            --pencil-blue: #2563eb;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #e8e4d9;
+            background-image: radial-gradient(#d1ccc0 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #2c2c2c;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .font-rounded {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+        }
+
+        /* タイムシートの紙質感 */
+        .timesheet-paper {
+            background-color: var(--paper-bg);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 4px 10px -2px rgba(0, 0, 0, 0.08);
+            border: 2px solid var(--sheet-line-bold);
+        }
+
+        /* タイムシートのグリッド線：すべてのコマの間に薄い黒の細線を表示 */
+        .ts-row {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.28);
+            transition: background-color 0.15s ease;
+        }
+        /* 6・12・18コマの下の線は黒の太線 */
+        .ts-row-6 {
+            border-bottom: 3px solid rgba(0, 0, 0, 0.9);
+        }
+        /* 24コマ（1秒）二重線風 */
+        .ts-row-24 {
+            border-bottom: 3px double var(--sheet-line-bold);
+        }
+
+        .ts-col-border {
+            border-right: 1.5px solid var(--sheet-line-bold);
+        }
+
+        /* 鉛筆で書いたような質感の記号 */
+        .pencil-mark {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            font-weight: 800;
+            color: var(--pencil-black);
+            text-shadow: 0 0 1px rgba(0,0,0,0.2);
+        }
+
+        .pencil-red {
+            color: var(--pencil-red);
+        }
+
+        /* ドロップ対象ホバー時 */
+        .drop-hover {
+            background-color: rgba(59, 130, 246, 0.18) !important;
+            box-shadow: inset 0 0 0 2px #3b82f6;
+        }
+
+        /* 正解・不正解のハイライト */
+        .row-correct {
+            background-color: rgba(34, 197, 94, 0.22) !important;
+        }
+        .row-wrong {
+            background-color: rgba(239, 68, 68, 0.22) !important;
+        }
+        .row-playing {
+            background-color: rgba(250, 204, 21, 0.45) !important;
+        }
+
+        /* スタンプ（指示書きパーツ）のスタイル */
+        .stamp-item {
+            cursor: grab;
+            transition: transform 0.12s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.12s ease;
+            touch-action: none;
+        }
+        .stamp-item:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+        .stamp-selected {
+            box-shadow: 0 0 0 3px #d93829, 0 4px 10px rgba(217, 56, 41, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* カスタムスクロールバー */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(75, 112, 88, 0.4);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(75, 112, 88, 0.7);
+        }
+
+        /* 縦線（止め指示）の描画：連続コマで上下が綺麗に繋がる */
+        .hold-line-visual {
+            width: 3.5px;
+            height: calc(100% + 2px);
+            background-color: #1d4ed8;
+            margin: 0 auto;
+            border-radius: 1px;
+        }
+
+        /* コマ毎のプルダウン装飾 */
+        .cell-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%232d4c38' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.35rem center;
+            background-repeat: no-repeat;
+            background-size: 0.9rem 0.9rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- ヘッダー -->
+    <header class="bg-[#2d4c38] text-[#fcfaf2] shadow-md px-4 py-2.5 sticky top-0 z-30">
+        <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+                <div class="bg-[#d93829] text-white font-rounded font-extrabold px-2.5 py-0.5 rounded text-xs sm:text-sm tracking-wider shadow-sm">
+                    原画研修
+                </div>
+                <h1 class="text-base sm:text-lg font-bold tracking-tight flex items-center gap-2">
+                    <span>タイムシート記入トレーナー</span>
+                    <span class="hidden sm:inline-block text-xs font-normal bg-white/15 px-2 py-0.5 rounded text-emerald-100">24fps / 1秒尺</span>
+                </h1>
+            </div>
+
+            <!-- ステージ選択ピル＆進捗リセット -->
+            <div class="flex items-center gap-2 overflow-x-auto py-0.5">
+                <div class="flex items-center gap-1.5" id="stage-selector">
+                    <!-- JSで生成 -->
+                </div>
+                <button id="btn-reset-progress" type="button" class="text-[11px] bg-white/10 hover:bg-white/20 text-emerald-100 px-2 py-1 rounded border border-white/20 transition cursor-pointer shrink-0" title="学習進捗をリセット">
+                    進捗リセット
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-3 sm:p-4 flex flex-col gap-4">
+
+        <!-- 上部エリア：1. お題カード ＆ 2. 指示書きパーツパレット（タイムシートの上に配置） -->
+        <div class="flex flex-col gap-3">
+            <!-- 1. お題カード -->
+            <section class="bg-white rounded-xl shadow-sm border-2 border-[#2d4c38]/30 p-3.5 sm:p-4 relative overflow-hidden">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                    <div class="flex items-center gap-2">
+                        <span id="problem-badge" class="inline-flex items-center gap-1 bg-[#2d4c38] text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
+                            第1問 / 全5問
+                        </span>
+                        <span id="problem-tag" class="text-xs font-bold text-[#d93829] bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-full">
+                            基本の3コマ打ち
+                        </span>
+                    </div>
+                    <button id="btn-toggle-hint" type="button" class="text-xs font-bold text-[#2d4c38] hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-lg flex items-center gap-1 cursor-pointer transition">
+                        <span>💡 ヒントを見る</span>
+                    </button>
+                </div>
+
+                <h2 id="problem-title" class="text-sm sm:text-base font-extrabold text-gray-900 mb-1.5 leading-snug">
+                    <!-- お題タイトル -->
+                </h2>
+
+                <div class="bg-[#fcfaf2] border-l-4 border-[#d93829] px-3 py-2 rounded-r-lg text-xs sm:text-sm text-gray-800 leading-relaxed font-medium whitespace-pre-line" id="problem-desc">
+                    <!-- お題詳細文 -->
+                </div>
+
+                <!-- ヒント折りたたみ -->
+                <div id="hint-box" class="hidden mt-2 text-xs sm:text-sm bg-amber-50 border border-amber-200 text-amber-950 p-2.5 rounded-lg leading-relaxed">
+                    <!-- ヒント本文 -->
+                </div>
+            </section>
+
+            <!-- 2. 指示書きパーツパレット（タイムシートの直上に配置・消しゴムなし） -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-3.5">
+                <div class="flex flex-wrap items-center justify-between gap-1 mb-2">
+                    <h3 class="text-xs sm:text-sm font-bold text-gray-800 flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-[#d93829] inline-block"></span>
+                        素材・指示書きパーツ（下の原画欄へドラッグ＆ドロップ、または各コマのプルダウンから選択）
+                    </h3>
+                    <span class="text-[11px] text-gray-500">消去は右の「×」ボタンまたはプルダウンの「（空白）」で操作</span>
+                </div>
+
+                <div id="palette-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                    <!-- JSでパーツ生成 -->
+                </div>
+            </section>
+        </div>
+
+        <!-- 下部エリア：左にタイムシート（アップ表示）、右にプレビュー＆判定・解説 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+            <!-- 左カラム：タイムシート（アップ表示＋コマ毎プルダウン付き） -->
+            <div class="lg:col-span-6 flex flex-col items-center">
+                <div class="w-full max-w-[440px] timesheet-paper rounded-lg overflow-hidden">
+                    <!-- シート上部ヘッダー（カット袋風情報） -->
+                    <div class="bg-[#eef3ef] border-b-2 border-[#2d4c38] px-3 py-1.5 flex justify-between items-center text-xs text-[#2d4c38] font-bold">
+                        <div class="flex items-center gap-2">
+                            <span class="border border-[#2d4c38] px-1.5 py-0.5 rounded bg-white">CUT 012</span>
+                            <span>SEC: 1 + 00</span>
+                        </div>
+                        <div class="text-[11px] bg-[#2d4c38] text-white px-2 py-0.5 rounded-full">
+                            Aセル（原画欄）
+                        </div>
+                    </div>
+
+                    <!-- 列見出し -->
+                    <div class="grid grid-cols-12 bg-[#e3ece5] border-b-2 border-[#2d4c38] text-xs font-bold text-[#2d4c38] text-center py-1.5">
+                        <div class="col-span-2 ts-col-border">コマ</div>
+                        <div class="col-span-5 ts-col-border">原画</div>
+                        <div class="col-span-5">プルダウン選択</div>
+                    </div>
+
+                    <!-- 1〜24コマの行コンテナ -->
+                    <div id="timesheet-body">
+                        <!-- JSで24行生成 -->
+                    </div>
+
+                    <!-- シート下部フッター -->
+                    <div class="bg-[#eef3ef] border-t border-[#2d4c38] px-3 py-1.5 text-[11px] text-[#2d4c38] flex justify-between items-center">
+                        <span>※6コマごとに太線（1秒＝24コマ）</span>
+                        <button id="btn-clear-all" type="button" class="text-red-700 hover:text-red-900 font-bold underline cursor-pointer">
+                            シートをクリア
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右カラム：プレビュー・判定ボタン・採点フィードバック -->
+            <div class="lg:col-span-6 flex flex-col gap-4">
+
+                <!-- 24fps モーションプレビュー窓 -->
+                <section class="bg-[#1e2420] text-white rounded-xl shadow-sm p-3.5 flex flex-col justify-between border border-gray-700">
+                    <div class="flex items-center justify-between text-xs text-gray-300 mb-2">
+                        <span class="font-bold flex items-center gap-1.5">
+                            <span id="rec-dot" class="w-2.5 h-2.5 rounded-full bg-gray-500 inline-block"></span>
+                            動きをプレビュー再生 (24fps)
+                        </span>
+                        <span id="preview-frame-label" class="font-mono text-emerald-400">FRAME: -- / 24</span>
+                    </div>
+
+                    <!-- キャンバス（ボールの動きでコマ打ち・ホールドを可視化） -->
+                    <div class="relative bg-[#fcfaf2] rounded-lg overflow-hidden h-36 border border-gray-600 flex items-center justify-center">
+                        <canvas id="preview-canvas" class="w-full h-full block"></canvas>
+                        <div id="preview-overlay-label" class="absolute bottom-1.5 right-2 text-[11px] font-bold px-2 py-0.5 rounded bg-black/75 text-white">
+                            待機中
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 判定＆操作パネル -->
+                <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex flex-col justify-between gap-3">
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-800 mb-1">シート提出・動きの確認</h3>
+                        <p class="text-xs text-gray-500">記入が終わったら「動きを確認」で再生するか、「採点する」を押して確認しましょう。</p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2.5">
+                        <button id="btn-check" type="button" class="flex-1 bg-[#d93829] hover:bg-[#b82b1e] active:scale-[0.98] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 cursor-pointer">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                            <span>採点する</span>
+                        </button>
+
+                        <button id="btn-play" type="button" class="bg-[#2d4c38] hover:bg-[#1f3627] active:scale-[0.98] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-1.5 cursor-pointer" title="今のタイムシートのタイミングで動きを再生">
+                            <svg id="play-icon" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
+                            <span id="play-text">動きを確認</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- 採点結果・原画研修フィードバックエリア -->
+                <section id="feedback-panel" class="hidden rounded-xl shadow-md border-2 p-4 sm:p-5 transition-all">
+                    <div class="flex items-start gap-3">
+                        <div id="feedback-icon" class="w-10 h-10 rounded-full flex items-center justify-center text-xl shrink-0 font-bold">
+                            <!-- アイコン -->
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                                <h3 id="feedback-title" class="text-base sm:text-lg font-extrabold">
+                                    <!-- 結果タイトル -->
+                                </h3>
+                                <button id="btn-next-problem" type="button" class="hidden bg-[#2d4c38] hover:bg-[#1f3627] text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-lg shadow transition flex items-center gap-1 cursor-pointer">
+                                    <span>次の問題へ</span>
+                                    <span>→</span>
+                                </button>
+                            </div>
+                            <p id="feedback-message" class="text-sm leading-relaxed whitespace-pre-line">
+                                <!-- 解説文 -->
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 全5問クリア修了証カード -->
+                <section id="certificate-panel" class="hidden rounded-xl shadow-lg border-2 border-amber-500 bg-gradient-to-br from-[#fcfaf2] via-amber-50 to-emerald-50 p-5 text-center relative overflow-hidden">
+                    <div class="inline-block bg-[#d93829] text-white text-xs font-extrabold px-3 py-1 rounded-full mb-2 tracking-widest">
+                        CERTIFICATE
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-rounded font-extrabold text-[#2d4c38] mb-1">
+                        原画研修 修了
+                    </h3>
+                    <p class="text-xs sm:text-sm text-gray-700 leading-relaxed mb-3">
+                        全5問のタイムシート記入課題をすべて合格しました！<br>
+                        コマ打ち（1コマ・2コマ・3コマ）、イーズインの緩急、ホールド線の基礎をマスターしています。
+                    </p>
+                    <button id="btn-replay-from-start" type="button" class="bg-[#2d4c38] hover:bg-[#1f3627] text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition cursor-pointer">
+                        第1問からもう一度練習する
+                    </button>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- フッター解説 -->
+    <footer class="bg-white/80 border-t border-gray-300 mt-8 py-4 px-4 text-xs text-gray-600">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="font-bold text-[#2d4c38]">📖 タイムシート基本ルールメモ</div>
+            <div class="flex flex-wrap justify-center gap-x-4 gap-y-1">
+                <span><strong>①・②・③</strong>：原画（キーフレーム）</span>
+                <span><strong>・</strong>：中割り（原画と原画の間を繋ぐ動画）</span>
+                <span><strong>｜</strong>：止め（同じ絵をキープするホールド線）</span>
+                <span><strong>空白</strong>：直前の絵をそのまま引っ張る</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ドラッグ中のゴースト表示用要素（タッチ・マウス共通カスタムD&D補助） -->
+    <div id="drag-ghost" class="fixed pointer-events-none z-50 hidden transform -translate-x-1/2 -translate-y-1/2 bg-white/95 border-2 border-[#d93829] shadow-xl rounded-lg px-3 py-1.5 font-rounded font-extrabold text-xl text-gray-900">
+    </div>
+
+    <script>
+        /**
+         * タイムシート記入トレーナー（原画研修版 v3） メインスクリプト
+         * 1秒＝24コマの日本の商業アニメーションタイムシート基準
+         */
+
+        // ==========================================
+        // 1. 指示書きパーツ（スタンプ）定義（※消しゴムは廃止）
+        // ==========================================
+        const STAMP_TYPES = {
+            KEY_1: {
+                id: 'KEY_1',
+                symbol: '①',
+                label: '原画 A①',
+                sub: '1枚目の原画',
+                colorClass: 'text-[#d93829]',
+                borderClass: 'border-[#d93829]/40 bg-red-50/50'
+            },
+            KEY_2: {
+                id: 'KEY_2',
+                symbol: '②',
+                label: '原画 A②',
+                sub: '2枚目の原画',
+                colorClass: 'text-[#d93829]',
+                borderClass: 'border-[#d93829]/40 bg-red-50/50'
+            },
+            KEY_3: {
+                id: 'KEY_3',
+                symbol: '③',
+                label: '原画 A③',
+                sub: '3枚目の原画',
+                colorClass: 'text-[#d93829]',
+                borderClass: 'border-[#d93829]/40 bg-red-50/50'
+            },
+            INBETWEEN: {
+                id: 'INBETWEEN',
+                symbol: '・',
+                label: '中割り (・)',
+                sub: '動画1枚分',
+                colorClass: 'text-gray-900',
+                borderClass: 'border-gray-300 bg-gray-50'
+            },
+            HOLD: {
+                id: 'HOLD',
+                symbol: '｜',
+                label: '止め線 (｜)',
+                sub: '同じ絵をキープ',
+                colorClass: 'text-blue-700',
+                borderClass: 'border-blue-300 bg-blue-50/50'
+            }
+        };
+
+        // ==========================================
+        // 2. 問題データ定義（全5問）
+        // ==========================================
+        const PROBLEMS = [
+            {
+                id: 1,
+                tag: '基本の3コマ打ち',
+                title: '第1問：3コマ打ちの基本',
+                description: '原画 A①からA②の間に中割りを3枚入れるように、タイムシートを書いてください。(3コマ打ち)\n（※1コマ目に原画「①」を配置してください）',
+                hint: '「3コマ打ち」は1枚の絵を3コマずつ見せる動きです。1コマ目に「①」を書いたら、2・3コマ目は空白にして、4コマ目に最初の中割り「・」を入れます。同じように3コマごとに配置していきましょう！',
+                availableStamps: ['KEY_1', 'KEY_2', 'INBETWEEN'],
+                maxPreviewFrame: 15,
+                solution: {
+                    1: 'KEY_1',
+                    4: 'INBETWEEN',
+                    7: 'INBETWEEN',
+                    10: 'INBETWEEN',
+                    13: 'KEY_2'
+                },
+                explanation: 'お見事！これが日本のTVアニメで最もよく使われる「3コマ打ち（フル3コマ）」の基本形です。\n・1〜3コマ目：原画①（3コマ分）\n・4〜6コマ目：中割り1枚目（3コマ分）\n・7〜9コマ目：中割り2枚目（3コマ分）\n・10〜12コマ目：中割り3枚目（3コマ分）\n・13コマ目〜：原画②\n間を2コマ空けることで「3コマずつ絵が切り替わる」リズムになります！'
+            },
+            {
+                id: 2,
+                tag: '滑らかな2コマ打ち',
+                title: '第2問：2コマ打ちの連続モーション',
+                description: '1秒(24コマ)の間に原画A①・A②・A③を使って、なめらかな2コマ打ちのタイムシートを書いてください。\n（※1コマ目に「①」、5コマ目に「②」、9コマ目に「③」を配置し、それぞれの間を2コマ打ちの中割り「・」で繋いでください）',
+                hint: '「2コマ打ち」は1枚の絵を2コマずつ見せます。1コマ目「①」→ 3コマ目「・」→ 5コマ目「②」→ 7コマ目「・」→ 9コマ目「③」と1コマおきに記入します！',
+                availableStamps: ['KEY_1', 'KEY_2', 'KEY_3', 'INBETWEEN'],
+                maxPreviewFrame: 12,
+                solution: {
+                    1: 'KEY_1',
+                    3: 'INBETWEEN',
+                    5: 'KEY_2',
+                    7: 'INBETWEEN',
+                    9: 'KEY_3'
+                },
+                explanation: 'バッチリです！「2コマ打ち」は1秒間に12枚の絵を使うため、アクションや日常芝居のなめらかな動きで多用されます。\n1コマ目(①) → 3コマ目(・) → 5コマ目(②) → 7コマ目(・) → 9コマ目(③) と、1コマ飛ばしでリズムよく記入するのがポイントです！'
+            },
+            {
+                id: 3,
+                tag: '1コマ打ち（フルアニメーション）',
+                title: '第3問：1コマ打ち（フルアニメーション）のアクション',
+                description: '素早いアクションを表現するため、1コマ目からすべて「1コマ打ち（毎コマ変化）」で、原画A①からA②の間に中割りを2枚入れて書いてください。',
+                hint: '「1コマ打ち」は24fpsの毎フレームで絵が切り替わります。空白を作らず、1コマ目から連続して並べてみましょう！',
+                availableStamps: ['KEY_1', 'KEY_2', 'INBETWEEN'],
+                maxPreviewFrame: 8,
+                solution: {
+                    1: 'KEY_1',
+                    2: 'INBETWEEN',
+                    3: 'INBETWEEN',
+                    4: 'KEY_2'
+                },
+                explanation: '正解です！「1コマ打ち（フルコマ）」は毎コマ絵が変わるため、激しいアクション、カメラの高速パン、エフェクトなどで使われます。\nわずか4コマ（1/6秒）で①から②へ一気に到達するスピード感をプレビューで確かめてみてください！'
+            },
+            {
+                id: 4,
+                tag: '詰め（イーズイン・減速）',
+                title: '第4問：詰め（イーズイン・減速）のタイミング表現 (中割り2枚)',
+                description: '1コマ目に原画「①」を置き、最初は素早く（1コマ打ち）、次に少し緩めて（2コマ打ち）、最後はゆっくり止まる（3コマ打ち）ように詰めながら「②」へ到達するタイムシートを書いてください。 (中割り2枚)',
+                hint: '1コマ目に「①」（1コマ打ち）→ 2コマ目に1枚目の中割り「・」（これを2コマ見せる）→ 4コマ目に2枚目の中割り「・」（これを3コマ見せる）→ 7コマ目に原画「②」を配置します！',
+                availableStamps: ['KEY_1', 'KEY_2', 'INBETWEEN'],
+                maxPreviewFrame: 10,
+                solution: {
+                    1: 'KEY_1',
+                    2: 'INBETWEEN',
+                    4: 'INBETWEEN',
+                    7: 'KEY_2'
+                },
+                explanation: '素晴らしい！これぞアニメの醍醐味「詰め（イーズイン・減速）」のタイミング表現です！\n・1コマ目（1コマ）：初速の勢い\n・2〜3コマ目（2コマ）：減速開始\n・4〜6コマ目（3コマ）：ブレーキをかけて減速\n・7コマ目：②にピタッと着地！\n間隔を広げていくことで、物体が自然に減速して止まる重みを表現できます。'
+            },
+            {
+                id: 5,
+                tag: 'ホールド（溜め）からの素早い動き出し',
+                title: '第5問：ホールド（溜め）からの素早い動き出し (中割2枚 2コマ打ち)',
+                description: '1コマ目に原画「①」を置き、2〜6コマ目まで同じ絵を止める（ホールドする）指示の縦線「｜」を入れたあと、7コマ目と9コマ目に中割り「・」を2枚（2コマ打ち）入れ、11コマ目に原画「②」を配置してください。\n（※ホールド線は、ホールドしたい部分の最初の2コマ目だけでも、2〜6コマ目すべてに引いてもどちらでもOKです） (中割2枚 2コマ打ち)',
+                hint: '1コマ目に「①」を置いたら、止める区間（2〜6コマ目）の最初の2コマ目だけに「｜」を入れるか、2〜6コマ目すべてに「｜」を入れます。その後、7コマ目に1枚目の中割り「・」、9コマ目に2枚目の中割り「・」を入れて、11コマ目に「②」を配置しましょう！',
+                availableStamps: ['KEY_1', 'KEY_2', 'HOLD', 'INBETWEEN'],
+                maxPreviewFrame: 14,
+                // ホールド区間定義（start〜endの間は、startだけにHOLDがあっても、start〜end全てにHOLDがあっても正解）
+                holdRanges: [
+                    { start: 2, end: 6 }
+                ],
+                solution: {
+                    1: 'KEY_1',
+                    2: 'HOLD',
+                    3: 'HOLD',
+                    4: 'HOLD',
+                    5: 'HOLD',
+                    6: 'HOLD',
+                    7: 'INBETWEEN',
+                    9: 'INBETWEEN',
+                    11: 'KEY_2'
+                },
+                explanation: '完璧です！長い溜め（ホールド）のあとに中割り「・」を2コマ打ちで2枚挟んでから次の原画「②」へ繋ぐことで、静止状態からのキレのある動き出しを表現できます。\n\n※ホールド線はホールドしたい区間の最初の1コマ（2コマ目）だけに書いて以下を空白にしても、区間全体（2〜6コマ目）に引いてもどちらでもOKです！現場の作画・演出でも両方の書き方が使われます。'
+            }
+        ];
+
+        // ==========================================
+        // 3. アプリケーション状態管理
+        // ==========================================
+        let currentProblemIndex = 0;
+        let sheetData = {}; // { 1: 'KEY_1', 4: 'INBETWEEN', ... }
+        let selectedStamp = null; // クリック選択中のスタンプID
+        let draggingStamp = null; // ドラッグ中のスタンプID
+        let solvedProblems = new Set();
+        let validationHighlights = {}; // { 1: 'correct' | 'wrong' }
+
+        // プレビューアニメーション用
+        let isPlaying = false;
+        let playTimer = null;
+        let currentPlayFrame = 0;
+
+        // ==========================================
+        // 4. DOM要素の取得
+        // ==========================================
+        const stageSelectorEl = document.getElementById('stage-selector');
+        const btnResetProgress = document.getElementById('btn-reset-progress');
+        const problemBadgeEl = document.getElementById('problem-badge');
+        const problemTagEl = document.getElementById('problem-tag');
+        const problemTitleEl = document.getElementById('problem-title');
+        const problemDescEl = document.getElementById('problem-desc');
+        const hintBoxEl = document.getElementById('hint-box');
+        const btnToggleHint = document.getElementById('btn-toggle-hint');
+        const paletteContainerEl = document.getElementById('palette-container');
+        const timesheetBodyEl = document.getElementById('timesheet-body');
+        const btnClearAll = document.getElementById('btn-clear-all');
+        const btnCheck = document.getElementById('btn-check');
+        const btnPlay = document.getElementById('btn-play');
+        const playTextEl = document.getElementById('play-text');
+        const recDotEl = document.getElementById('rec-dot');
+        const previewFrameLabelEl = document.getElementById('preview-frame-label');
+        const previewOverlayLabelEl = document.getElementById('preview-overlay-label');
+        const previewCanvas = document.getElementById('preview-canvas');
+        const feedbackPanelEl = document.getElementById('feedback-panel');
+        const feedbackIconEl = document.getElementById('feedback-icon');
+        const feedbackTitleEl = document.getElementById('feedback-title');
+        const feedbackMessageEl = document.getElementById('feedback-message');
+        const btnNextProblem = document.getElementById('btn-next-problem');
+        const certificatePanelEl = document.getElementById('certificate-panel');
+        const btnReplayFromStart = document.getElementById('btn-replay-from-start');
+        const dragGhostEl = document.getElementById('drag-ghost');
+
+        // ==========================================
+        // 5. 初期化＆レンダリング関数
+        // ==========================================
+        function init() {
+            renderStageSelector();
+            loadProblem(0);
+            setupGlobalEvents();
+            resizeCanvas();
+            drawPreviewFrame(0);
+        }
+
+        // ヘッダーのステージ選択ピル描画
+        function renderStageSelector() {
+            stageSelectorEl.innerHTML = '';
+            PROBLEMS.forEach((prob, idx) => {
+                const isCurrent = idx === currentProblemIndex;
+                const isSolved = solvedProblems.has(prob.id);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `px-2.5 py-1 rounded-full text-xs font-bold transition flex items-center gap-1 cursor-pointer shrink-0 ${
+                    isCurrent
+                        ? 'bg-[#fcfaf2] text-[#2d4c38] shadow'
+                        : isSolved
+                            ? 'bg-emerald-700/80 text-white hover:bg-emerald-600'
+                            : 'bg-white/15 text-emerald-100 hover:bg-white/25'
+                }`;
+                btn.innerHTML = `
+                    <span>第${prob.id}問</span>
+                    ${isSolved ? '<span class="text-amber-300">★</span>' : ''}
+                `;
+                btn.addEventListener('click', () => {
+                    loadProblem(idx);
+                });
+                stageSelectorEl.appendChild(btn);
+            });
+        }
+
+        // 問題の読み込み
+        function loadProblem(index) {
+            stopPlayback();
+            currentProblemIndex = index;
+            const prob = PROBLEMS[index];
+
+            // 状態リセット
+            sheetData = {};
+            selectedStamp = null;
+            validationHighlights = {};
+            feedbackPanelEl.classList.add('hidden');
+            certificatePanelEl.classList.add('hidden');
+            hintBoxEl.classList.add('hidden');
+            btnToggleHint.innerHTML = '<span>💡 ヒントを見る</span>';
+
+            // テキスト反映
+            problemBadgeEl.textContent = `第${prob.id}問 / 全${PROBLEMS.length}問`;
+            problemTagEl.textContent = prob.tag;
+            problemTitleEl.textContent = prob.title;
+            problemDescEl.textContent = prob.description;
+            hintBoxEl.textContent = `【ヒント】${prob.hint}`;
+
+            renderStageSelector();
+            renderPalette();
+            renderTimesheet();
+            drawPreviewFrame(0);
+        }
+
+        // 指示書きパーツパレットの描画（※消しゴムは含めない）
+        function renderPalette() {
+            const prob = PROBLEMS[currentProblemIndex];
+            paletteContainerEl.innerHTML = '';
+
+            prob.availableStamps.forEach(stampId => {
+                const stamp = STAMP_TYPES[stampId];
+                if (!stamp) return;
+                const isSelected = selectedStamp === stampId;
+
+                const card = document.createElement('div');
+                card.className = `stamp-item border-2 rounded-xl p-2 flex items-center gap-2.5 select-none shadow-sm hover:shadow ${stamp.borderClass} ${
+                    isSelected ? 'stamp-selected' : ''
+                }`;
+                card.setAttribute('draggable', 'true');
+                card.dataset.stampId = stampId;
+
+                card.innerHTML = `
+                    <div class="w-9 h-9 rounded-lg bg-white border border-gray-300 flex items-center justify-center font-rounded font-extrabold text-xl shrink-0 shadow-inner ${stamp.colorClass}">
+                        ${stamp.symbol}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="text-xs font-extrabold text-gray-900 truncate">${stamp.label}</div>
+                        <div class="text-[10px] text-gray-500 truncate">${stamp.sub}</div>
+                    </div>
+                `;
+
+                // クリックで選択トグル（スマホ・タブレットやクリック配置用）
+                card.addEventListener('click', () => {
+                    if (selectedStamp === stampId) {
+                        selectedStamp = null;
+                    } else {
+                        selectedStamp = stampId;
+                    }
+                    renderPalette();
+                });
+
+                // HTML5 Drag & Drop (デスクトップ用)
+                card.addEventListener('dragstart', (e) => {
+                    draggingStamp = stampId;
+                    selectedStamp = stampId;
+                    e.dataTransfer.setData('text/plain', stampId);
+                    e.dataTransfer.effectAllowed = 'copy';
+                });
+
+                card.addEventListener('dragend', () => {
+                    draggingStamp = null;
+                    document.querySelectorAll('.drop-hover').forEach(el => el.classList.remove('drop-hover'));
+                });
+
+                // タッチデバイス用カスタムドラッグ
+                card.addEventListener('touchstart', (e) => {
+                    if (e.touches.length !== 1) return;
+                    draggingStamp = stampId;
+                    const touch = e.touches[0];
+                    dragGhostEl.textContent = stamp.symbol;
+                    dragGhostEl.className = `fixed pointer-events-none z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white/95 border-2 border-[#d93829] shadow-xl rounded-lg px-3 py-1.5 font-rounded font-extrabold text-xl ${stamp.colorClass}`;
+                    dragGhostEl.style.left = `${touch.clientX}px`;
+                    dragGhostEl.style.top = `${touch.clientY}px`;
+                    dragGhostEl.classList.remove('hidden');
+                }, { passive: true });
+
+                paletteContainerEl.appendChild(card);
+            });
+        }
+
+        // タイムシート（1〜24コマ＋コマ毎プルダウン）の描画
+        function renderTimesheet() {
+            const prob = PROBLEMS[currentProblemIndex];
+            const selectOptions = prob.availableStamps.filter(id => Boolean(STAMP_TYPES[id]));
+
+            timesheetBodyEl.innerHTML = '';
+
+            for (let frame = 1; frame <= 24; frame++) {
+                const row = document.createElement('div');
+
+                // 行の区切り線（全コマ間に細い線を表示し、6・12・18・24コマは太線で強調）
+                let borderClass = 'ts-row';
+                if (frame === 24) borderClass = 'ts-row ts-row-24';
+                else if (frame % 6 === 0) borderClass = 'ts-row ts-row-6';
+
+                // 正誤ハイライト・再生中ハイライト
+                let stateClass = '';
+                if (isPlaying && currentPlayFrame === frame) {
+                    stateClass = 'row-playing';
+                } else if (validationHighlights[frame] === 'correct') {
+                    stateClass = 'row-correct';
+                } else if (validationHighlights[frame] === 'wrong') {
+                    stateClass = 'row-wrong';
+                }
+
+                row.className = `grid grid-cols-12 items-center h-9 ${borderClass} ${stateClass}`;
+                row.dataset.frame = frame;
+
+                // 1. コマ番号列
+                const colNum = document.createElement('div');
+                const isMajorFrame = frame % 6 === 0 || frame === 1;
+                colNum.className = `col-span-2 h-full flex items-center justify-center ts-col-border text-xs font-mono ${
+                    isMajorFrame ? 'font-extrabold text-[#2d4c38] bg-[#eef3ef]/60' : 'text-gray-600'
+                }`;
+                colNum.textContent = frame;
+
+                // 2. 原画欄（ドロップ＆タップ対象）
+                const colCell = document.createElement('div');
+                colCell.className = 'col-span-5 h-full flex items-center justify-center ts-col-border cursor-pointer relative group hover:bg-emerald-50/60 transition';
+                colCell.dataset.frame = frame;
+
+                const currentVal = sheetData[frame] || '';
+                if (currentVal && STAMP_TYPES[currentVal]) {
+                    const st = STAMP_TYPES[currentVal];
+                    if (currentVal === 'HOLD') {
+                        // 縦線（止め指示）のビジュアル描画
+                        colCell.innerHTML = `<div class="hold-line-visual" title="止め線 (｜)"></div>`;
+                    } else {
+                        colCell.innerHTML = `<span class="pencil-mark text-lg leading-none ${st.colorClass}">${st.symbol}</span>`;
+                    }
+                } else {
+                    // 未記入時の薄いガイド表示
+                    colCell.innerHTML = `<span class="text-[10px] text-gray-300 opacity-0 group-hover:opacity-100 transition">+</span>`;
+                }
+
+                // セルクリック時の動作（選択中スタンプがあれば配置、なければ順送り切替）
+                colCell.addEventListener('click', () => {
+                    if (selectedStamp) {
+                        applyStampToFrame(frame, selectedStamp);
+                    } else {
+                        // 選択なしクリック時は「空白 → availableStamps順」でトグル
+                        const cycle = ['', ...selectOptions];
+                        const nextIdx = (cycle.indexOf(currentVal) + 1) % cycle.length;
+                        applyStampToFrame(frame, cycle[nextIdx] || '');
+                    }
+                });
+
+                // ドラッグ＆ドロップ受け入れイベント
+                colCell.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'copy';
+                    colCell.classList.add('drop-hover');
+                });
+
+                colCell.addEventListener('dragleave', () => {
+                    colCell.classList.remove('drop-hover');
+                });
+
+                colCell.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    colCell.classList.remove('drop-hover');
+                    const stampId = e.dataTransfer.getData('text/plain') || draggingStamp;
+                    if (stampId) {
+                        applyStampToFrame(frame, stampId);
+                    }
+                });
+
+                // 3. プルダウン選択＆クイック消去ボタン列
+                const colAction = document.createElement('div');
+                colAction.className = 'col-span-5 h-full flex items-center gap-1 px-1.5';
+
+                const selectEl = document.createElement('select');
+                selectEl.className = 'cell-select w-full h-7 text-xs font-bold bg-white/90 border border-[#2d4c38]/40 rounded px-1.5 pr-5 text-gray-800 focus:outline-none focus:border-[#2d4c38] cursor-pointer';
+                selectEl.ariaLabel = `${frame}コマ目の指示を選択`;
+
+                // 空白オプション
+                const emptyOpt = document.createElement('option');
+                emptyOpt.value = '';
+                emptyOpt.textContent = '（空白）';
+                selectEl.appendChild(emptyOpt);
+
+                selectOptions.forEach(optId => {
+                    const st = STAMP_TYPES[optId];
+                    const opt = document.createElement('option');
+                    opt.value = optId;
+                    opt.textContent = `${st.symbol} ${st.label}`;
+                    selectEl.appendChild(opt);
+                });
+
+                selectEl.value = currentVal;
+
+                selectEl.addEventListener('change', (e) => {
+                    applyStampToFrame(frame, e.target.value);
+                });
+
+                // クイック消去ボタン（記入時のみ表示）
+                const clearBtn = document.createElement('button');
+                clearBtn.type = 'button';
+                clearBtn.className = `w-6 h-6 rounded flex items-center justify-center text-xs font-bold shrink-0 transition cursor-pointer ${
+                    currentVal
+                        ? 'text-gray-500 hover:text-red-600 hover:bg-red-50'
+                        : 'text-transparent pointer-events-none'
+                }`;
+                clearBtn.textContent = '×';
+                clearBtn.title = `${frame}コマ目を空白にする`;
+                clearBtn.addEventListener('click', () => {
+                    applyStampToFrame(frame, '');
+                });
+
+                colAction.appendChild(selectEl);
+                colAction.appendChild(clearBtn);
+
+                row.appendChild(colNum);
+                row.appendChild(colCell);
+                row.appendChild(colAction);
+                timesheetBodyEl.appendChild(row);
+            }
+        }
+
+        // 指定コマにスタンプを適用（双方向同期）
+        function applyStampToFrame(frame, stampId) {
+            stopPlayback();
+            validationHighlights = {}; // 編集したら採点ハイライトをリセット
+            feedbackPanelEl.classList.add('hidden');
+
+            if (!stampId || !STAMP_TYPES[stampId]) {
+                delete sheetData[frame];
+            } else {
+                sheetData[frame] = stampId;
+            }
+
+            renderTimesheet();
+            drawPreviewFrame(frame);
+        }
+
+        // ==========================================
+        // 6. グローバルイベント（タッチD&D・ボタン類）
+        // ==========================================
+        function setupGlobalEvents() {
+            // タッチドラッグ移動
+            document.addEventListener('touchmove', (e) => {
+                if (!draggingStamp || e.touches.length !== 1) return;
+                const touch = e.touches[0];
+                dragGhostEl.style.left = `${touch.clientX}px`;
+                dragGhostEl.style.top = `${touch.clientY}px`;
+
+                document.querySelectorAll('.drop-hover').forEach(el => el.classList.remove('drop-hover'));
+                const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                const cell = target ? target.closest('[data-frame]') : null;
+                if (cell && cell.classList.contains('col-span-5')) {
+                    cell.classList.add('drop-hover');
+                }
+            }, { passive: true });
+
+            // タッチドラッグ終了（ドロップ判定）
+            document.addEventListener('touchend', (e) => {
+                if (!draggingStamp) return;
+                dragGhostEl.classList.add('hidden');
+                document.querySelectorAll('.drop-hover').forEach(el => el.classList.remove('drop-hover'));
+
+                if (e.changedTouches.length > 0) {
+                    const touch = e.changedTouches[0];
+                    const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                    const cell = target ? target.closest('[data-frame]') : null;
+                    if (cell && cell.dataset.frame) {
+                        const frame = parseInt(cell.dataset.frame, 10);
+                        applyStampToFrame(frame, draggingStamp);
+                    }
+                }
+                draggingStamp = null;
+            });
+
+            // ヒント表示トグル
+            btnToggleHint.addEventListener('click', () => {
+                const isHidden = hintBoxEl.classList.contains('hidden');
+                if (isHidden) {
+                    hintBoxEl.classList.remove('hidden');
+                    btnToggleHint.innerHTML = '<span>💡 ヒントを隠す</span>';
+                } else {
+                    hintBoxEl.classList.add('hidden');
+                    btnToggleHint.innerHTML = '<span>💡 ヒントを見る</span>';
+                }
+            });
+
+            // シート全消去
+            btnClearAll.addEventListener('click', () => {
+                stopPlayback();
+                sheetData = {};
+                validationHighlights = {};
+                feedbackPanelEl.classList.add('hidden');
+                renderTimesheet();
+                drawPreviewFrame(0);
+            });
+
+            // 進捗リセット
+            btnResetProgress.addEventListener('click', () => {
+                solvedProblems.clear();
+                loadProblem(0);
+            });
+
+            // 採点するボタン
+            btnCheck.addEventListener('click', checkAnswer);
+
+            // 動きを確認（プレビュー再生/停止）
+            btnPlay.addEventListener('click', () => {
+                if (isPlaying) {
+                    stopPlayback();
+                } else {
+                    startPlayback();
+                }
+            });
+
+            // 次の問題へ
+            btnNextProblem.addEventListener('click', () => {
+                const nextIdx = (currentProblemIndex + 1) % PROBLEMS.length;
+                loadProblem(nextIdx);
+            });
+
+            // 修了証から第1問へ戻る
+            btnReplayFromStart.addEventListener('click', () => {
+                loadProblem(0);
+            });
+
+            // ウィンドウリサイズ時のキャンバス調整
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                drawPreviewFrame(currentPlayFrame);
+            });
+        }
+
+        // ==========================================
+        // 7. 採点・フィードバックロジック
+        // ==========================================
+        function checkAnswer() {
+            stopPlayback();
+            const prob = PROBLEMS[currentProblemIndex];
+            const solution = prob.solution;
+            const holdRanges = prob.holdRanges || [];
+            validationHighlights = {};
+
+            let isAllCorrect = true;
+            let errorDetails = [];
+
+            // ホールド区間ごとに「最初の1コマだけHOLD（残りは空白）」か「区間すべてHOLD」のどちらかを満たしているか判定
+            const holdFrameStatus = {}; // { [frame]: { isValid: boolean, hasMark: boolean, errorMsg?: string } }
+            holdRanges.forEach(range => {
+                // パターンA: ホールドしたい部分の最初のコマ（range.start）だけにHOLDがあり、以降は空白
+                let isFirstOnlyValid = (sheetData[range.start] === 'HOLD');
+                for (let f = range.start + 1; f <= range.end; f++) {
+                    if (sheetData[f]) {
+                        isFirstOnlyValid = false;
+                    }
+                }
+
+                // パターンB: ホールドしたい区間すべて（range.start 〜 range.end）にHOLDがある
+                let isAllFilledValid = true;
+                for (let f = range.start; f <= range.end; f++) {
+                    if (sheetData[f] !== 'HOLD') {
+                        isAllFilledValid = false;
+                    }
+                }
+
+                const rangeValid = isFirstOnlyValid || isAllFilledValid;
+                for (let f = range.start; f <= range.end; f++) {
+                    if (rangeValid) {
+                        holdFrameStatus[f] = {
+                            isValid: true,
+                            hasMark: Boolean(sheetData[f])
+                        };
+                    } else {
+                        let msg = '';
+                        if (f === range.start && !sheetData[f]) {
+                            msg = `・${f}コマ目にホールド線「｜」を入れて止めを開始してください。`;
+                        } else if (sheetData[f] && sheetData[f] !== 'HOLD') {
+                            msg = `・${f}コマ目はホールド区間です（縦線「｜」または空白にします）。`;
+                        } else {
+                            msg = `・${range.start}〜${range.end}コマ目のホールド指示（最初の${range.start}コマ目だけに「｜」、または${range.start}〜${range.end}コマ目すべてに「｜」）を確認してください。`;
+                        }
+                        holdFrameStatus[f] = {
+                            isValid: false,
+                            hasMark: Boolean(sheetData[f]),
+                            errorMsg: msg
+                        };
+                    }
+                }
+            });
+
+            // 1〜24全コマをチェック
+            for (let f = 1; f <= 24; f++) {
+                // ホールド区間内のフレーム判定
+                if (holdFrameStatus[f]) {
+                    if (holdFrameStatus[f].isValid) {
+                        if (holdFrameStatus[f].hasMark) {
+                            validationHighlights[f] = 'correct';
+                        }
+                    } else {
+                        isAllCorrect = false;
+                        validationHighlights[f] = 'wrong';
+                        if (!errorDetails.includes(holdFrameStatus[f].errorMsg)) {
+                            errorDetails.push(holdFrameStatus[f].errorMsg);
+                        }
+                    }
+                    continue;
+                }
+
+                const userVal = sheetData[f] || null;
+                const solVal = solution[f] || null;
+
+                if (userVal === solVal) {
+                    if (solVal !== null) {
+                        validationHighlights[f] = 'correct';
+                    }
+                } else {
+                    isAllCorrect = false;
+                    validationHighlights[f] = 'wrong';
+
+                    if (solVal !== null && userVal === null) {
+                        errorDetails.push(`・${f}コマ目に「${STAMP_TYPES[solVal].label}」が必要です。`);
+                    } else if (solVal === null && userVal !== null) {
+                        errorDetails.push(`・${f}コマ目は空白（直前の絵を引っ張る）にする場所です。`);
+                    } else {
+                        errorDetails.push(`・${f}コマ目の記号が違います（正解は「${STAMP_TYPES[solVal].label}」）。`);
+                    }
+                }
+            }
+
+            renderTimesheet();
+
+            // フィードバックパネル表示
+            feedbackPanelEl.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-500', 'text-emerald-950', 'bg-red-50', 'border-red-400', 'text-red-950');
+
+            if (isAllCorrect) {
+                solvedProblems.add(prob.id);
+                renderStageSelector();
+
+                feedbackPanelEl.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-950');
+                feedbackIconEl.className = 'w-10 h-10 rounded-full flex items-center justify-center text-xl shrink-0 font-bold bg-emerald-600 text-white';
+                feedbackIconEl.textContent = '○';
+                feedbackTitleEl.textContent = '合格！完璧なタイムシートです！';
+                feedbackMessageEl.textContent = prob.explanation;
+
+                if (currentProblemIndex < PROBLEMS.length - 1) {
+                    btnNextProblem.classList.remove('hidden');
+                } else {
+                    btnNextProblem.classList.add('hidden');
+                }
+
+                if (solvedProblems.size === PROBLEMS.length) {
+                    certificatePanelEl.classList.remove('hidden');
+                }
+
+                // 自動的にプレビュー再生して動きを体感させる
+                startPlayback();
+            } else {
+                feedbackPanelEl.classList.add('bg-red-50', 'border-red-400', 'text-red-950');
+                feedbackIconEl.className = 'w-10 h-10 rounded-full flex items-center justify-center text-xl shrink-0 font-bold bg-[#d93829] text-white';
+                feedbackIconEl.textContent = '×';
+                feedbackTitleEl.textContent = 'リテイク！コマの打ち方を見直しましょう';
+                btnNextProblem.classList.add('hidden');
+                certificatePanelEl.classList.add('hidden');
+
+                const topErrors = errorDetails.slice(0, 4).join('\n');
+                const moreCount = errorDetails.length > 4 ? `\n（ほか ${errorDetails.length - 4} 箇所の修正点があります）` : '';
+                feedbackMessageEl.textContent = `赤くハイライトされたコマを確認してください：\n${topErrors}${moreCount}`;
+            }
+        }
+
+        // ==========================================
+        // 8. 24fps モーションプレビュー機能
+        // ==========================================
+        function resizeCanvas() {
+            const rect = previewCanvas.parentElement.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            previewCanvas.width = rect.width * dpr;
+            previewCanvas.height = rect.height * dpr;
+            const ctx = previewCanvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+        }
+
+        function startPlayback() {
+            stopPlayback();
+            const prob = PROBLEMS[currentProblemIndex];
+
+            // 記入されている最後のコマを検出（最低でも問題の基準尺まで再生）
+            let lastFilledFrame = 0;
+            for (let f = 1; f <= 24; f++) {
+                if (sheetData[f]) lastFilledFrame = f;
+            }
+            const endFrame = Math.min(24, Math.max(prob.maxPreviewFrame || 14, lastFilledFrame + 2));
+
+            isPlaying = true;
+            currentPlayFrame = 1;
+            playTextEl.textContent = '停止';
+            recDotEl.className = 'w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block';
+
+            updatePlaybackStep();
+            // 24fps = 1000ms / 24 ≒ 41.67ms
+            playTimer = setInterval(() => {
+                currentPlayFrame++;
+                if (currentPlayFrame > endFrame) {
+                    currentPlayFrame = 1; // ループ再生
+                }
+                updatePlaybackStep();
+            }, 1000 / 24);
+        }
+
+        function stopPlayback() {
+            if (playTimer) {
+                clearInterval(playTimer);
+                playTimer = null;
+            }
+            isPlaying = false;
+            currentPlayFrame = 0;
+            playTextEl.textContent = '動きを確認';
+            recDotEl.className = 'w-2.5 h-2.5 rounded-full bg-gray-500 inline-block';
+            previewFrameLabelEl.textContent = 'FRAME: -- / 24';
+            previewOverlayLabelEl.textContent = '待機中';
+            renderTimesheet();
+            drawPreviewFrame(0);
+        }
+
+        function updatePlaybackStep() {
+            previewFrameLabelEl.textContent = `FRAME: ${String(currentPlayFrame).padStart(2, '0')} / 24`;
+            renderTimesheet();
+            drawPreviewFrame(currentPlayFrame);
+        }
+
+        // 指定コマ時点での絵の状態を解析してキャンバスに描画
+        function drawPreviewFrame(targetFrame) {
+            const prob = PROBLEMS[currentProblemIndex];
+            const rect = previewCanvas.parentElement.getBoundingClientRect();
+            const width = rect.width;
+            const height = rect.height;
+            const ctx = previewCanvas.getContext('2d');
+
+            ctx.clearRect(0, 0, width, height);
+
+            // 背景の原画用紙グリッド線
+            ctx.strokeStyle = 'rgba(75, 112, 88, 0.15)';
+            ctx.lineWidth = 1;
+            for (let x = 20; x < width; x += 20) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+
+            // スタート（①）とゴール（②または③）のガイド位置
+            const startX = 48;
+            const endX = width - 48;
+            const centerY = height * 0.52;
+            const hasKey3 = prob.availableStamps.includes('KEY_3');
+
+            // 軌道ライン
+            ctx.strokeStyle = 'rgba(45, 76, 56, 0.25)';
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(startX, centerY);
+            ctx.lineTo(endX, centerY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // スタート・中間・ゴールの薄いゴースト円
+            ctx.strokeStyle = 'rgba(217, 56, 41, 0.35)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(startX, centerY, 16, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(217, 56, 41, 0.6)';
+            ctx.font = 'bold 10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('A①', startX, centerY + 28);
+
+            if (hasKey3) {
+                const midX = (startX + endX) / 2;
+                ctx.beginPath();
+                ctx.arc(midX, centerY, 16, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fillText('A②', midX, centerY + 28);
+            }
+
+            ctx.beginPath();
+            ctx.arc(endX, centerY, 16, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fillText(hasKey3 ? 'A③' : 'A②', endX, centerY + 28);
+
+            // タイムシート上の描画ステップ数をカウント
+            let totalDrawings = 0;
+            for (let f = 1; f <= 24; f++) {
+                const s = sheetData[f];
+                if (s === 'KEY_1' || s === 'KEY_2' || s === 'KEY_3' || s === 'INBETWEEN') {
+                    totalDrawings++;
+                }
+            }
+
+            if (targetFrame === 0 || totalDrawings === 0) {
+                drawBall(ctx, startX, centerY, '①', '#d93829', false);
+                return;
+            }
+
+            // targetFrame時点での絵のインデックス・ラベル・ホールド状態を追跡
+            let drawingIndex = -1;
+            let currentLabel = '未記入';
+            let isHold = false;
+            let isKeyFrame = false;
+
+            for (let f = 1; f <= targetFrame; f++) {
+                const s = sheetData[f];
+                if (s === 'KEY_1' || s === 'KEY_2' || s === 'KEY_3') {
+                    drawingIndex++;
+                    currentLabel = STAMP_TYPES[s].label;
+                    isHold = false;
+                    isKeyFrame = true;
+                } else if (s === 'INBETWEEN') {
+                    drawingIndex++;
+                    currentLabel = '中割り (・)';
+                    isHold = false;
+                    isKeyFrame = false;
+                } else if (s === 'HOLD') {
+                    isHold = true;
+                }
+            }
+
+            if (drawingIndex < 0) {
+                previewOverlayLabelEl.textContent = `${targetFrame}コマ目: 未記入`;
+                return;
+            }
+
+            // 進行度（0.0 〜 1.0）
+            const denom = Math.max(1, totalDrawings - 1);
+            const progress = Math.min(1, drawingIndex / denom);
+            const ballX = startX + (endX - startX) * progress;
+
+            const symbolText = currentLabel.includes('①') ? '①'
+                             : currentLabel.includes('②') ? '②'
+                             : currentLabel.includes('③') ? '③'
+                             : '・';
+            const ballColor = isHold ? '#1d4ed8' : (isKeyFrame ? '#d93829' : '#2d4c38');
+
+            drawBall(ctx, ballX, centerY, symbolText, ballColor, isHold);
+
+            const statusText = isHold ? `${currentLabel}（ホールド中｜）` : currentLabel;
+            previewOverlayLabelEl.textContent = `${targetFrame}コマ目: ${statusText}`;
+        }
+
+        function drawBall(ctx, x, y, text, color, isHold) {
+            // 影
+            ctx.fillStyle = 'rgba(0,0,0,0.12)';
+            ctx.beginPath();
+            ctx.ellipse(x, y + 21, 14, 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 本体円
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, 16, 0, Math.PI * 2);
+            ctx.fill();
+
+            // ホールド中の外枠リング
+            if (isHold) {
+                ctx.strokeStyle = '#93c5fd';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // 中央の記号テキスト
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 14px "M PLUS Rounded 1c", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, x, y + 1);
+        }
+
+        // アプリ起動
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
