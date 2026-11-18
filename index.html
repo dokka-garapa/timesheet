@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>タイムシート記入トレーナー - 原画研修</title>
+    <title>タイムシート記入ゲーム - 原画研修初級編</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
@@ -40,7 +40,7 @@
         /* タイムシートのグリッド線：すべてのコマの間に薄い黒の細線を表示 */
         .ts-row {
             border-bottom: 1px solid rgba(0, 0, 0, 0.28);
-            transition: background-color 0.15s ease;
+            transition: background-color 0.12s ease;
         }
         /* 6・12・18コマの下の線は黒の太線 */
         .ts-row-6 {
@@ -61,10 +61,6 @@
             font-weight: 800;
             color: var(--pencil-black);
             text-shadow: 0 0 1px rgba(0,0,0,0.2);
-        }
-
-        .pencil-red {
-            color: var(--pencil-red);
         }
 
         /* ドロップ対象ホバー時 */
@@ -143,10 +139,10 @@
         <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2.5">
                 <div class="bg-[#d93829] text-white font-rounded font-extrabold px-2.5 py-0.5 rounded text-xs sm:text-sm tracking-wider shadow-sm">
-                    原画研修
+                    原画研修初級編
                 </div>
                 <h1 class="text-base sm:text-lg font-bold tracking-tight flex items-center gap-2">
-                    <span>タイムシート記入トレーナー</span>
+                    <span>タイムシート記入ゲーム</span>
                     <span class="hidden sm:inline-block text-xs font-normal bg-white/15 px-2 py-0.5 rounded text-emerald-100">24fps / 1秒尺</span>
                 </h1>
             </div>
@@ -176,7 +172,7 @@
                             第1問 / 全5問
                         </span>
                         <span id="problem-tag" class="text-xs font-bold text-[#d93829] bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-full">
-                            基本の3コマ打ち
+                            3コマ打ち
                         </span>
                     </div>
                     <button id="btn-toggle-hint" type="button" class="text-xs font-bold text-[#2d4c38] hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-lg flex items-center gap-1 cursor-pointer transition">
@@ -324,11 +320,11 @@
                         CERTIFICATE
                     </div>
                     <h3 class="text-xl sm:text-2xl font-rounded font-extrabold text-[#2d4c38] mb-1">
-                        原画研修 修了
+                        原画研修初級編 修了
                     </h3>
                     <p class="text-xs sm:text-sm text-gray-700 leading-relaxed mb-3">
                         全5問のタイムシート記入課題をすべて合格しました！<br>
-                        コマ打ち（1コマ・2コマ・3コマ）、イーズインの緩急、ホールド線の基礎をマスターしています。
+                        コマ打ち（1コマ・2コマ・3コマ）、変則打ち、止メ（ホールド線）の基礎をマスターしています。
                     </p>
                     <button id="btn-replay-from-start" type="button" class="bg-[#2d4c38] hover:bg-[#1f3627] text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition cursor-pointer">
                         第1問からもう一度練習する
@@ -358,7 +354,7 @@
 
     <script>
         /**
-         * タイムシート記入トレーナー（原画研修版 v3） メインスクリプト
+         * タイムシート記入トレーナー（原画研修版 v10） メインスクリプト
          * 1秒＝24コマの日本の商業アニメーションタイムシート基準
          */
 
@@ -414,8 +410,8 @@
         const PROBLEMS = [
             {
                 id: 1,
-                tag: '基本の3コマ打ち',
-                title: '第1問：3コマ打ちの基本',
+                tag: '3コマ打ち',
+                title: '第1問：3コマ打ち',
                 description: '原画 A①からA②の間に中割りを3枚入れるように、タイムシートを書いてください。(3コマ打ち)\n（※1コマ目に原画「①」を配置してください）',
                 hint: '「3コマ打ち」は1枚の絵を3コマずつ見せる動きです。1コマ目に「①」を書いたら、2・3コマ目は空白にして、4コマ目に最初の中割り「・」を入れます。同じように3コマごとに配置していきましょう！',
                 availableStamps: ['KEY_1', 'KEY_2', 'INBETWEEN'],
@@ -431,59 +427,59 @@
             },
             {
                 id: 2,
-                tag: '滑らかな2コマ打ち',
-                title: '第2問：2コマ打ちの連続モーション',
-                description: '1秒(24コマ)の間に原画A①・A②・A③を使って、なめらかな2コマ打ちのタイムシートを書いてください。\n（※1コマ目に「①」、5コマ目に「②」、9コマ目に「③」を配置し、それぞれの間を2コマ打ちの中割り「・」で繋いでください）',
-                hint: '「2コマ打ち」は1枚の絵を2コマずつ見せます。1コマ目「①」→ 3コマ目「・」→ 5コマ目「②」→ 7コマ目「・」→ 9コマ目「③」と1コマおきに記入します！',
-                availableStamps: ['KEY_1', 'KEY_2', 'KEY_3', 'INBETWEEN'],
-                maxPreviewFrame: 12,
+                tag: '2コマ打ち',
+                title: '第2問：2コマ打ち',
+                description: '原画 A①からA②の間に中割りを2枚入れるように、タイムシートを書いてください。(2コマ打ち)\n（※1コマ目に原画「①」を配置してください）',
+                hint: '「2コマ打ち」は1枚の絵を2コマずつ見せる打ち方です。1コマ目に「①」を置いたら、2コマ目は空白にして、3コマ目に1枚目の中割り「・」、5コマ目に2枚目の中割り「・」、そして7コマ目に原画「②」を配置します！',
+                availableStamps: ['KEY_1', 'KEY_2', 'INBETWEEN'],
+                maxPreviewFrame: 10,
                 solution: {
                     1: 'KEY_1',
                     3: 'INBETWEEN',
-                    5: 'KEY_2',
-                    7: 'INBETWEEN',
-                    9: 'KEY_3'
+                    5: 'INBETWEEN',
+                    7: 'KEY_2'
                 },
-                explanation: 'バッチリです！「2コマ打ち」は1秒間に12枚の絵を使うため、アクションや日常芝居のなめらかな動きで多用されます。\n1コマ目(①) → 3コマ目(・) → 5コマ目(②) → 7コマ目(・) → 9コマ目(③) と、1コマ飛ばしでリズムよく記入するのがポイントです！'
+                explanation: 'バッチリです！「2コマ打ち」は1秒間に12枚の絵を使うため、アクションや日常芝居のなめらかな動きで多用されます。\n・1〜2コマ目：原画①（2コマ分）\n・3〜4コマ目：中割り1枚目（2コマ分）\n・5〜6コマ目：中割り2枚目（2コマ分）\n・7コマ目〜：原画②\n1コマ飛ばしでリズムよく記入するのがポイントです！'
             },
             {
                 id: 3,
-                tag: '1コマ打ち（フルアニメーション）',
-                title: '第3問：1コマ打ち（フルアニメーション）のアクション',
-                description: '素早いアクションを表現するため、1コマ目からすべて「1コマ打ち（毎コマ変化）」で、原画A①からA②の間に中割りを2枚入れて書いてください。',
-                hint: '「1コマ打ち」は24fpsの毎フレームで絵が切り替わります。空白を作らず、1コマ目から連続して並べてみましょう！',
+                tag: '1コマ打ち',
+                title: '第3問：1コマ打ち',
+                description: '原画 A①からA②の間に中割りを3枚入れるように、タイムシートを書いてください。(1コマ打ち)\n（※1コマ目に原画「①」を配置してください）',
+                hint: '「1コマ打ち」は24fpsの毎フレームで絵が切り替わります。空白を作らず、1コマ目から順に「①」「・」「・」「・」「②」と連続して並べてみましょう！',
                 availableStamps: ['KEY_1', 'KEY_2', 'INBETWEEN'],
                 maxPreviewFrame: 8,
                 solution: {
                     1: 'KEY_1',
                     2: 'INBETWEEN',
                     3: 'INBETWEEN',
-                    4: 'KEY_2'
+                    4: 'INBETWEEN',
+                    5: 'KEY_2'
                 },
-                explanation: '正解です！「1コマ打ち（フルコマ）」は毎コマ絵が変わるため、激しいアクション、カメラの高速パン、エフェクトなどで使われます。\nわずか4コマ（1/6秒）で①から②へ一気に到達するスピード感をプレビューで確かめてみてください！'
+                explanation: '正解です！「1コマ打ち（フルコマ）」は毎コマ絵が変わるため、激しいアクション、カメラの高速パン、エフェクトなどで使われます。\n・1コマ目：原画①\n・2コマ目：中割り1枚目\n・3コマ目：中割り2枚目\n・4コマ目：中割り3枚目\n・5コマ目〜：原画②\nわずか5コマで一気に駆け抜けるスピード感をプレビューで確かめてみてください！'
             },
             {
                 id: 4,
-                tag: '詰め（イーズイン・減速）',
-                title: '第4問：詰め（イーズイン・減速）のタイミング表現 (中割り2枚)',
-                description: '1コマ目に原画「①」を置き、最初は素早く（1コマ打ち）、次に少し緩めて（2コマ打ち）、最後はゆっくり止まる（3コマ打ち）ように詰めながら「②」へ到達するタイムシートを書いてください。 (中割り2枚)',
-                hint: '1コマ目に「①」（1コマ打ち）→ 2コマ目に1枚目の中割り「・」（これを2コマ見せる）→ 4コマ目に2枚目の中割り「・」（これを3コマ見せる）→ 7コマ目に原画「②」を配置します！',
+                tag: '変則打ち',
+                title: '第4問：変則打ち',
+                description: '1コマ目に原画「①」を置き、最初は「3コマ打ち」、次に中割り1枚目を「2コマ打ち」、最後に中割り2枚目を「1コマ打ち」にして原画「②」へ繋ぐタイムシートを書いてください。 (中割り2枚)',
+                hint: '1コマ目に「①」（3コマ打ちなので1〜3コマ目まで表示）→ 4コマ目に1枚目の中割り「・」（2コマ打ちなので4〜5コマ目まで表示）→ 6コマ目に2枚目の中割り「・」（1コマ打ちなので6コマ目のみ）→ 7コマ目に原画「②」を配置します！',
                 availableStamps: ['KEY_1', 'KEY_2', 'INBETWEEN'],
                 maxPreviewFrame: 10,
                 solution: {
                     1: 'KEY_1',
-                    2: 'INBETWEEN',
                     4: 'INBETWEEN',
+                    6: 'INBETWEEN',
                     7: 'KEY_2'
                 },
-                explanation: '素晴らしい！これぞアニメの醍醐味「詰め（イーズイン・減速）」のタイミング表現です！\n・1コマ目（1コマ）：初速の勢い\n・2〜3コマ目（2コマ）：減速開始\n・4〜6コマ目（3コマ）：ブレーキをかけて減速\n・7コマ目：②にピタッと着地！\n間隔を広げていくことで、物体が自然に減速して止まる重みを表現できます。'
+                explanation: '素晴らしい！3コマ打ち → 2コマ打ち → 1コマ打ちへと間隔を詰めていく変則打ちのタイミング表現です！\n・1〜3コマ目（3コマ打ち）：原画①\n・4〜5コマ目（2コマ打ち）：中割り1枚目\n・6コマ目（1コマ打ち）：中割り2枚目\n・7コマ目：原画②へ到達！'
             },
             {
                 id: 5,
-                tag: 'ホールド（溜め）からの素早い動き出し',
-                title: '第5問：ホールド（溜め）からの素早い動き出し (中割2枚 2コマ打ち)',
-                description: '1コマ目に原画「①」を置き、2〜6コマ目まで同じ絵を止める（ホールドする）指示の縦線「｜」を入れたあと、7コマ目と9コマ目に中割り「・」を2枚（2コマ打ち）入れ、11コマ目に原画「②」を配置してください。\n（※ホールド線は、ホールドしたい部分の最初の2コマ目だけでも、2〜6コマ目すべてに引いてもどちらでもOKです） (中割2枚 2コマ打ち)',
-                hint: '1コマ目に「①」を置いたら、止める区間（2〜6コマ目）の最初の2コマ目だけに「｜」を入れるか、2〜6コマ目すべてに「｜」を入れます。その後、7コマ目に1枚目の中割り「・」、9コマ目に2枚目の中割り「・」を入れて、11コマ目に「②」を配置しましょう！',
+                tag: '止メからの動き出し',
+                title: '第5問：止メからの動き出し',
+                description: 'A①を6コマ止メで表示したあと、中割りを2枚(2コマ打ち)入れてA②に繋いでください。\n（※1コマ目に原画「①」を配置してください。ホールド線は止メ区間の最初のコマだけでも、区間すべてに引いてもどちらでもOKです）',
+                hint: '1コマ目に「①」を置き、続く5コマ分（2〜6コマ目）を止メ（ホールド線「｜」）にすることで、A①を合計6コマ止メで表示できます。ホールド線は止メ区間の最初のコマ（2コマ目）だけに「｜」を入れても、2〜6コマ目すべてに「｜」を引いてもどちらでも正解です。その後、2コマ打ちで中割り「・」を2枚入れてA②へ繋ぎましょう！',
                 availableStamps: ['KEY_1', 'KEY_2', 'HOLD', 'INBETWEEN'],
                 maxPreviewFrame: 14,
                 // ホールド区間定義（start〜endの間は、startだけにHOLDがあっても、start〜end全てにHOLDがあっても正解）
@@ -501,7 +497,7 @@
                     9: 'INBETWEEN',
                     11: 'KEY_2'
                 },
-                explanation: '完璧です！長い溜め（ホールド）のあとに中割り「・」を2コマ打ちで2枚挟んでから次の原画「②」へ繋ぐことで、静止状態からのキレのある動き出しを表現できます。\n\n※ホールド線はホールドしたい区間の最初の1コマ（2コマ目）だけに書いて以下を空白にしても、区間全体（2〜6コマ目）に引いてもどちらでもOKです！現場の作画・演出でも両方の書き方が使われます。'
+                explanation: '完璧です！A①を6コマ止メ（1コマ目の①＋2〜6コマ目のホールド線）でしっかり見せたあと、中割り「・」を2コマ打ちで2枚挟んでA②へ繋ぐことで、溜めからのキレのある動き出しを表現できます。\n\n※ホールド線は止メ区間の最初の1コマ（2コマ目）だけに書いて以下を空白にしても、区間全体（2〜6コマ目）に引いてもどちらでもOKです！'
             }
         ];
 
@@ -515,10 +511,15 @@
         let solvedProblems = new Set();
         let validationHighlights = {}; // { 1: 'correct' | 'wrong' }
 
-        // プレビューアニメーション用
+        // 行DOM要素のキャッシュ（再生中の高速クラス切り替え用）
+        let rowElements = new Array(25).fill(null);
+
+        // プレビューアニメーション用（requestAnimationFrame + 経過時間制御）
         let isPlaying = false;
-        let playTimer = null;
+        let playRafId = null;
+        let playStartTime = 0;
         let currentPlayFrame = 0;
+        let lastHighlightedFrame = 0;
 
         // ==========================================
         // 4. DOM要素の取得
@@ -681,12 +682,13 @@
             });
         }
 
-        // タイムシート（1〜24コマ＋コマ毎プルダウン）の描画
+        // タイムシート（1〜24コマ＋コマ毎プルダウン）の描画と行キャッシュ構築
         function renderTimesheet() {
             const prob = PROBLEMS[currentProblemIndex];
             const selectOptions = prob.availableStamps.filter(id => Boolean(STAMP_TYPES[id]));
 
             timesheetBodyEl.innerHTML = '';
+            rowElements.fill(null);
 
             for (let frame = 1; frame <= 24; frame++) {
                 const row = document.createElement('div');
@@ -817,6 +819,9 @@
                 row.appendChild(colCell);
                 row.appendChild(colAction);
                 timesheetBodyEl.appendChild(row);
+
+                // 高速ハイライト切り替え用にDOM参照をキャッシュ
+                rowElements[frame] = row;
             }
         }
 
@@ -917,6 +922,8 @@
             btnNextProblem.addEventListener('click', () => {
                 const nextIdx = (currentProblemIndex + 1) % PROBLEMS.length;
                 loadProblem(nextIdx);
+                // 画面を一番上までスクロール
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
             // 修了証から第1問へ戻る
@@ -1069,7 +1076,7 @@
         }
 
         // ==========================================
-        // 8. 24fps モーションプレビュー機能
+        // 8. 24fps モーションプレビュー機能（軽量化・差分クラス切り替え版）
         // ==========================================
         function resizeCanvas() {
             const rect = previewCanvas.parentElement.getBoundingClientRect();
@@ -1077,7 +1084,18 @@
             previewCanvas.width = rect.width * dpr;
             previewCanvas.height = rect.height * dpr;
             const ctx = previewCanvas.getContext('2d');
-            ctx.scale(dpr, dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        // 再生中のハイライト行だけを軽量に切り替え（DOM再構築を一切行わない）
+        function setPlayingRowHighlight(frame) {
+            if (lastHighlightedFrame > 0 && rowElements[lastHighlightedFrame]) {
+                rowElements[lastHighlightedFrame].classList.remove('row-playing');
+            }
+            if (frame > 0 && rowElements[frame]) {
+                rowElements[frame].classList.add('row-playing');
+            }
+            lastHighlightedFrame = frame;
         }
 
         function startPlayback() {
@@ -1093,39 +1111,49 @@
 
             isPlaying = true;
             currentPlayFrame = 1;
+            playStartTime = performance.now();
             playTextEl.textContent = '停止';
             recDotEl.className = 'w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block';
 
-            updatePlaybackStep();
-            // 24fps = 1000ms / 24 ≒ 41.67ms
-            playTimer = setInterval(() => {
-                currentPlayFrame++;
-                if (currentPlayFrame > endFrame) {
-                    currentPlayFrame = 1; // ループ再生
+            updatePlaybackStep(1);
+
+            const frameDurationMs = 1000 / 24; // 24fps = 41.666...ms
+
+            function tick(now) {
+                if (!isPlaying) return;
+                const elapsed = now - playStartTime;
+                const frameOffset = Math.floor(elapsed / frameDurationMs);
+                const nextFrame = (frameOffset % endFrame) + 1;
+
+                if (nextFrame !== currentPlayFrame) {
+                    currentPlayFrame = nextFrame;
+                    updatePlaybackStep(currentPlayFrame);
                 }
-                updatePlaybackStep();
-            }, 1000 / 24);
+                playRafId = requestAnimationFrame(tick);
+            }
+
+            playRafId = requestAnimationFrame(tick);
         }
 
         function stopPlayback() {
-            if (playTimer) {
-                clearInterval(playTimer);
-                playTimer = null;
+            if (playRafId !== null) {
+                cancelAnimationFrame(playRafId);
+                playRafId = null;
             }
             isPlaying = false;
             currentPlayFrame = 0;
+            setPlayingRowHighlight(0);
             playTextEl.textContent = '動きを確認';
             recDotEl.className = 'w-2.5 h-2.5 rounded-full bg-gray-500 inline-block';
             previewFrameLabelEl.textContent = 'FRAME: -- / 24';
             previewOverlayLabelEl.textContent = '待機中';
-            renderTimesheet();
             drawPreviewFrame(0);
         }
 
-        function updatePlaybackStep() {
-            previewFrameLabelEl.textContent = `FRAME: ${String(currentPlayFrame).padStart(2, '0')} / 24`;
-            renderTimesheet();
-            drawPreviewFrame(currentPlayFrame);
+        function updatePlaybackStep(frame) {
+            previewFrameLabelEl.textContent = `FRAME: ${String(frame).padStart(2, '0')} / 24`;
+            setPlayingRowHighlight(frame);
+            drawPreviewFrame(frame);
         }
 
         // 指定コマ時点での絵の状態を解析してキャンバスに描画
