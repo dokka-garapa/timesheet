@@ -37,6 +37,16 @@
             border: 2px solid var(--sheet-line-bold);
         }
 
+        /* 「次の問題へ」ボタンを大きく目立たせる */
+        .btn-next-big {
+            animation: next-pulse 1.6s ease-in-out infinite;
+        }
+        .btn-next-big:hover { animation: none; transform: scale(1.04); }
+        @keyframes next-pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(217, 56, 41, 0.45); }
+            50% { transform: scale(1.04); box-shadow: 0 0 0 10px rgba(217, 56, 41, 0); }
+        }
+
         /* タイムシートのグリッド線：すべてのコマの間に薄い黒の細線を表示 */
         .ts-row {
             border-bottom: 1px solid rgba(0, 0, 0, 0.28);
@@ -302,7 +312,7 @@
                                 <h3 id="feedback-title" class="text-base sm:text-lg font-extrabold">
                                     <!-- 結果タイトル -->
                                 </h3>
-                                <button id="btn-next-problem" type="button" class="hidden bg-[#2d4c38] hover:bg-[#1f3627] text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-lg shadow transition flex items-center gap-1 cursor-pointer">
+                                <button id="btn-next-problem" type="button" class="hidden btn-next-big bg-[#d93829] hover:bg-[#b82e21] text-white text-lg sm:text-xl font-extrabold px-8 py-4 rounded-xl shadow-lg ring-4 ring-[#d93829]/30 transition flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto">
                                     <span>次の問題へ</span>
                                     <span>→</span>
                                 </button>
