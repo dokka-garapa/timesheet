@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>タイムシート記入ゲーム - 原画研修初級編</title>
+    <title>タイムシート記入ゲーム 初級編</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+Thai:wght@400;500;700&family=Noto+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --paper-bg: #fcfaf2;
@@ -17,7 +17,7 @@
         }
 
         body {
-            font-family: 'Noto Sans JP', sans-serif;
+            font-family: 'Noto Sans JP', 'Noto Sans Thai', 'Noto Sans Arabic', sans-serif;
             background-color: #e8e4d9;
             background-image: radial-gradient(#d1ccc0 1px, transparent 1px);
             background-size: 20px 20px;
@@ -140,6 +140,48 @@
             background-repeat: no-repeat;
             background-size: 0.9rem 0.9rem;
         }
+
+        /* クレジット（v12・ページの一番下） */
+        .credit-wrap {
+            margin-top: 160px;
+            padding-bottom: 64px;
+            padding-left: 16px;
+            padding-right: 16px;
+            text-align: center;
+        }
+        .credit-langbar {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            gap: 4px;
+            margin-left: 4px;
+        }
+        .credit-langb {
+            border: 1.5px solid rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.12);
+            color: #fcfaf2;
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            line-height: 1.4;
+        }
+        .credit-langb.on {
+            background: #f79c1d;
+            border-color: #e07f00;
+            color: #ffffff;
+        }
+        .credit-footer {
+            font-size: 13px;
+            color: #5a5348;
+            line-height: 1.8;
+        }
+        .credit-footer a {
+            color: #2d4c38;
+            font-weight: 700;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -147,14 +189,21 @@
     <!-- ヘッダー -->
     <header class="bg-[#2d4c38] text-[#fcfaf2] shadow-md px-4 py-2.5 sticky top-0 z-30">
         <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center gap-2.5">
-                <div class="bg-[#d93829] text-white font-rounded font-extrabold px-2.5 py-0.5 rounded text-xs sm:text-sm tracking-wider shadow-sm">
-                    原画研修初級編
-                </div>
+            <div class="flex items-center gap-2.5 flex-wrap">
                 <h1 class="text-base sm:text-lg font-bold tracking-tight flex items-center gap-2">
-                    <span>タイムシート記入ゲーム</span>
-                    <span class="hidden sm:inline-block text-xs font-normal bg-white/15 px-2 py-0.5 rounded text-emerald-100">24fps / 1秒尺</span>
+                    <span id="hdr-title">タイムシート記入ゲーム 初級編</span>
+                    <span id="hdr-fps" class="hidden sm:inline-block text-xs font-normal bg-white/15 px-2 py-0.5 rounded text-emerald-100">24fps / 1秒尺</span>
                 </h1>
+        <div class="credit-langbar" id="credit-langbar" aria-label="Credit language">
+            <button type="button" class="credit-langb" data-clang="ja">日</button>
+            <button type="button" class="credit-langb" data-clang="en">EN</button>
+            <button type="button" class="credit-langb" data-clang="ko">한</button>
+            <button type="button" class="credit-langb" data-clang="zh">中</button>
+            <button type="button" class="credit-langb" data-clang="fr">FR</button>
+            <button type="button" class="credit-langb" data-clang="es">ES</button>
+            <button type="button" class="credit-langb" data-clang="ar">ع</button>
+            <button type="button" class="credit-langb" data-clang="th">ไทย</button>
+        </div>
             </div>
 
             <!-- ステージ選択ピル＆進捗リセット -->
@@ -209,9 +258,9 @@
                 <div class="flex flex-wrap items-center justify-between gap-1 mb-2">
                     <h3 class="text-xs sm:text-sm font-bold text-gray-800 flex items-center gap-1.5">
                         <span class="w-2.5 h-2.5 rounded-full bg-[#d93829] inline-block"></span>
-                        素材・指示書きパーツ（下の原画欄へドラッグ＆ドロップ、または各コマのプルダウンから選択）
+                        <span id="palette-title">素材・指示書きパーツ（下の原画欄へドラッグ＆ドロップ、または各コマのプルダウンから選択）</span>
                     </h3>
-                    <span class="text-[11px] text-gray-500">消去は右の「×」ボタンまたはプルダウンの「（空白）」で操作</span>
+                    <span id="palette-note" class="text-[11px] text-gray-500">消去は右の「×」ボタンまたはプルダウンの「（空白）」で操作</span>
                 </div>
 
                 <div id="palette-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
@@ -232,16 +281,14 @@
                             <span class="border border-[#2d4c38] px-1.5 py-0.5 rounded bg-white">CUT 012</span>
                             <span>SEC: 1 + 00</span>
                         </div>
-                        <div class="text-[11px] bg-[#2d4c38] text-white px-2 py-0.5 rounded-full">
-                            Aセル（原画欄）
-                        </div>
+                        <div id="sheet-chip" class="text-[11px] bg-[#2d4c38] text-white px-2 py-0.5 rounded-full">Aセル（原画欄）</div>
                     </div>
 
                     <!-- 列見出し -->
                     <div class="grid grid-cols-12 bg-[#e3ece5] border-b-2 border-[#2d4c38] text-xs font-bold text-[#2d4c38] text-center py-1.5">
-                        <div class="col-span-2 ts-col-border">コマ</div>
-                        <div class="col-span-5 ts-col-border">原画</div>
-                        <div class="col-span-5">プルダウン選択</div>
+                        <div class="col-span-2 ts-col-border" id="col-frame">コマ</div>
+                        <div class="col-span-5 ts-col-border" id="col-key">原画</div>
+                        <div class="col-span-5" id="col-select">プルダウン選択</div>
                     </div>
 
                     <!-- 1〜24コマの行コンテナ -->
@@ -251,7 +298,7 @@
 
                     <!-- シート下部フッター -->
                     <div class="bg-[#eef3ef] border-t border-[#2d4c38] px-3 py-1.5 text-[11px] text-[#2d4c38] flex justify-between items-center">
-                        <span>※6コマごとに太線（1秒＝24コマ）</span>
+                        <span id="sheet-note">※6コマごとに太線（1秒＝24コマ）</span>
                         <button id="btn-clear-all" type="button" class="text-red-700 hover:text-red-900 font-bold underline cursor-pointer">
                             シートをクリア
                         </button>
@@ -267,7 +314,7 @@
                     <div class="flex items-center justify-between text-xs text-gray-300 mb-2">
                         <span class="font-bold flex items-center gap-1.5">
                             <span id="rec-dot" class="w-2.5 h-2.5 rounded-full bg-gray-500 inline-block"></span>
-                            動きをプレビュー再生 (24fps)
+                            <span id="preview-title">動きをプレビュー再生 (24fps)</span>
                         </span>
                         <span id="preview-frame-label" class="font-mono text-emerald-400">FRAME: -- / 24</span>
                     </div>
@@ -284,14 +331,14 @@
                 <!-- 判定＆操作パネル -->
                 <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex flex-col justify-between gap-3">
                     <div>
-                        <h3 class="text-sm font-bold text-gray-800 mb-1">シート提出・動きの確認</h3>
-                        <p class="text-xs text-gray-500">記入が終わったら「動きを確認」で再生するか、「採点する」を押して確認しましょう。</p>
+                        <h3 class="text-sm font-bold text-gray-800 mb-1" id="judge-title">シート提出・動きの確認</h3>
+                        <p class="text-xs text-gray-500" id="judge-desc">記入が終わったら「動きを確認」で再生するか、「採点する」を押して確認しましょう。</p>
                     </div>
 
                     <div class="flex flex-wrap gap-2.5">
                         <button id="btn-check" type="button" class="flex-1 bg-[#d93829] hover:bg-[#b82b1e] active:scale-[0.98] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 cursor-pointer">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                            <span>採点する</span>
+                            <span id="check-text">採点する</span>
                         </button>
 
                         <button id="btn-play" type="button" class="bg-[#2d4c38] hover:bg-[#1f3627] active:scale-[0.98] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-1.5 cursor-pointer" title="今のタイムシートのタイミングで動きを再生">
@@ -313,7 +360,7 @@
                                     <!-- 結果タイトル -->
                                 </h3>
                                 <button id="btn-next-problem" type="button" class="hidden btn-next-big bg-[#d93829] hover:bg-[#b82e21] text-white text-lg sm:text-xl font-extrabold px-8 py-4 rounded-xl shadow-lg ring-4 ring-[#d93829]/30 transition flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto">
-                                    <span>次の問題へ</span>
+                                    <span id="next-text">次の問題へ</span>
                                     <span>→</span>
                                 </button>
                             </div>
@@ -329,12 +376,8 @@
                     <div class="inline-block bg-[#d93829] text-white text-xs font-extrabold px-3 py-1 rounded-full mb-2 tracking-widest">
                         CERTIFICATE
                     </div>
-                    <h3 class="text-xl sm:text-2xl font-rounded font-extrabold text-[#2d4c38] mb-1">
-                        原画研修初級編 修了
-                    </h3>
-                    <p class="text-xs sm:text-sm text-gray-700 leading-relaxed mb-3">
-                        全5問のタイムシート記入課題をすべて合格しました！<br>
-                        コマ打ち（1コマ・2コマ・3コマ）、変則打ち、止メ（ホールド線）の基礎をマスターしています。
+                    <h3 class="text-xl sm:text-2xl font-rounded font-extrabold text-[#2d4c38] mb-1" id="cert-title">タイムシート記入ゲーム 初級編 修了</h3>
+                    <p class="text-xs sm:text-sm text-gray-700 leading-relaxed mb-3" id="cert-body">全5問のタイムシート記入課題をすべて合格しました！<br>コマ打ち（1コマ・2コマ・3コマ）、変則打ち、止メ（ホールド線）の基礎をマスターしています。
                     </p>
                     <button id="btn-replay-from-start" type="button" class="bg-[#2d4c38] hover:bg-[#1f3627] text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition cursor-pointer">
                         第1問からもう一度練習する
@@ -348,15 +391,23 @@
     <!-- フッター解説 -->
     <footer class="bg-white/80 border-t border-gray-300 mt-8 py-4 px-4 text-xs text-gray-600">
         <div class="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-            <div class="font-bold text-[#2d4c38]">📖 タイムシート基本ルールメモ</div>
+            <div class="font-bold text-[#2d4c38]" id="rules-title">📖 タイムシート基本ルールメモ</div>
             <div class="flex flex-wrap justify-center gap-x-4 gap-y-1">
-                <span><strong>①・②・③</strong>：原画（キーフレーム）</span>
-                <span><strong>・</strong>：中割り（原画と原画の間を繋ぐ動画）</span>
-                <span><strong>｜</strong>：止め（同じ絵をキープするホールド線）</span>
-                <span><strong>空白</strong>：直前の絵をそのまま引っ張る</span>
+                <span><strong>①・②・③</strong>：<span id="rule-key">原画（キーフレーム）</span></span>
+                <span><strong>・</strong>：<span id="rule-inb">中割り（原画と原画の間を繋ぐ動画）</span></span>
+                <span><strong>｜</strong>：<span id="rule-hold">止め（同じ絵をキープするホールド線）</span></span>
+                <span><strong id="rule-blank-sym">空白</strong>：<span id="rule-blank">直前の絵をそのまま引っ張る</span></span>
             </div>
         </div>
     </footer>
+
+    <!-- クレジット（v12・ページの一番下／上に長いスペース160px） ※言語ボタンはv13でタイトル横へ移動 -->
+    <div class="credit-wrap">
+        <footer class="credit-footer" id="credit-footer">
+            <div>© 2026 <span id="credit-name">ふっふ (Fuffu)</span></div>
+            <div><span id="credit-contact">お問い合わせ:</span> <a href="https://x.com/dokka_garapa" target="_blank" rel="noopener noreferrer">X @dokka_garapa</a></div>
+        </footer>
+    </div>
 
     <!-- ドラッグ中のゴースト表示用要素（タッチ・マウス共通カスタムD&D補助） -->
     <div id="drag-ghost" class="fixed pointer-events-none z-50 hidden transform -translate-x-1/2 -translate-y-1/2 bg-white/95 border-2 border-[#d93829] shadow-xl rounded-lg px-3 py-1.5 font-rounded font-extrabold text-xl text-gray-900">
@@ -364,9 +415,880 @@
 
     <script>
         /**
-         * タイムシート記入トレーナー（原画研修版 v10） メインスクリプト
+         * タイムシート記入トレーナー（原画研修版 v16） メインスクリプト
+         * v12: ページの一番下にクレジット（8言語訳・Xリンク）を追加
+         * v13: 言語切り替えボタンをクレジット上からタイトル横（ヘッダー）へ移動
+         * v14: ゲーム全体（UI・パーツ・全5問・採点文）を8言語化し、タイトル横ボタンで全体を切り替え
+         * v15: 「原画研修初級編」の文字を無くした（ヘッダーのバッジを削除、タイトルと修了証からも削除）
+         * v16: タイトルを「タイムシート記入ゲーム 初級編」に変更（全言語・修了証も連動）
          * 1秒＝24コマの日本の商業アニメーションタイムシート基準
          */
+
+
+        // ==========================================
+        // 0. 多言語辞書（v14）: UI文字列／パーツ名／問題文（日本語のパーツ名・問題文は実行時に原本を控える）
+        // ==========================================
+        const STR = {
+ "ja": {
+  "docTitle": "タイムシート記入ゲーム 初級編",
+  "title": "タイムシート記入ゲーム 初級編",
+  "fps": "24fps / 1秒尺",
+  "reset": "進捗リセット",
+  "resetTitle": "学習進捗をリセット",
+  "stage": "第{n}問",
+  "probBadge": "第{n}問 / 全{total}問",
+  "hintShow": "💡 ヒントを見る",
+  "hintHide": "💡 ヒントを隠す",
+  "hintPrefix": "",
+  "paletteTitle": "素材・指示書きパーツ（下の原画欄へドラッグ＆ドロップ、または各コマのプルダウンから選択）",
+  "paletteNote": "消去は右の「×」ボタンまたはプルダウンの「（空白）」で操作",
+  "sheetChip": "Aセル（原画欄）",
+  "colFrame": "コマ",
+  "colKey": "原画",
+  "colSelect": "プルダウン選択",
+  "sheetNote": "※6コマごとに太線（1秒＝24コマ）",
+  "clearSheet": "シートをクリア",
+  "previewTitle": "動きをプレビュー再生 (24fps)",
+  "idle": "待機中",
+  "judgeTitle": "シート提出・動きの確認",
+  "judgeDesc": "記入が終わったら「動きを確認」で再生するか、「採点する」を押して確認しましょう。",
+  "check": "採点する",
+  "play": "動きを確認",
+  "stop": "停止",
+  "next": "次の問題へ",
+  "certTitle": "タイムシート記入ゲーム 初級編 修了",
+  "certBody": "全5問のタイムシート記入課題をすべて合格しました！\nコマ打ち（1コマ・2コマ・3コマ）、変則打ち、止メ（ホールド線）の基礎をマスターしています。",
+  "replay": "第1問からもう一度練習する",
+  "rulesTitle": "📖 タイムシート基本ルールメモ",
+  "ruleKey": "原画（キーフレーム）",
+  "ruleInb": "中割り（原画と原画の間を繋ぐ動画）",
+  "ruleHold": "止め（同じ絵をキープするホールド線）",
+  "ruleBlank": "直前の絵をそのまま引っ張る",
+  "blank": "（空白）",
+  "selectAria": "{f}コマ目の指示を選択",
+  "clearTitle": "{f}コマ目を空白にする",
+  "passTitle": "合格！完璧なタイムシートです！",
+  "failTitle": "リテイク！コマの打ち方を見直しましょう",
+  "failIntro": "赤くハイライトされたコマを確認してください：",
+  "more": "（ほか {n} 箇所の修正点があります）",
+  "errHoldStart": "・{f}コマ目にホールド線「｜」を入れて止めを開始してください。",
+  "errHoldZone": "・{f}コマ目はホールド区間です（縦線「｜」または空白にします）。",
+  "errHoldRange": "・{s}〜{e}コマ目のホールド指示（最初の{s}コマ目だけに「｜」、または{s}〜{e}コマ目すべてに「｜」）を確認してください。",
+  "errNeed": "・{f}コマ目に「{label}」が必要です。",
+  "errBlank": "・{f}コマ目は空白（直前の絵を引っ張る）にする場所です。",
+  "errWrong": "・{f}コマ目の記号が違います（正解は「{label}」）。",
+  "unfilled": "未記入",
+  "frameStatus": "{f}コマ目: {status}",
+  "holdSuffix": "（ホールド中｜）",
+  "creditName": "ふっふ (Fuffu)",
+  "creditContact": "お問い合わせ:",
+  "playTitle": "今のタイムシートのタイミングで動きを再生"
+ },
+ "en": {
+  "docTitle": "Timesheet Game — Beginner",
+  "title": "Timesheet Game — Beginner",
+  "fps": "24fps / 1 sec",
+  "reset": "Reset progress",
+  "resetTitle": "Reset learning progress",
+  "stage": "Q{n}",
+  "probBadge": "Question {n} / {total}",
+  "hintShow": "💡 Show hint",
+  "hintHide": "💡 Hide hint",
+  "hintPrefix": "[Hint] ",
+  "paletteTitle": "Parts to place (drag & drop onto the key-drawing column below, or choose from each frame's dropdown)",
+  "paletteNote": "To erase, use the × button on the right or choose “(blank)” in the dropdown",
+  "sheetChip": "A cel (key column)",
+  "colFrame": "Frame",
+  "colKey": "Key drawing",
+  "colSelect": "Dropdown",
+  "sheetNote": "*Bold line every 6 frames (1 sec = 24 frames)",
+  "clearSheet": "Clear sheet",
+  "previewTitle": "Motion preview (24fps)",
+  "idle": "Ready",
+  "judgeTitle": "Submit & check the motion",
+  "judgeDesc": "When you're done, play it with “Preview motion”, or press “Grade it” to check your sheet.",
+  "check": "Grade it",
+  "play": "Preview motion",
+  "stop": "Stop",
+  "next": "Next question",
+  "certTitle": "Timesheet Game (Beginner) — Completed",
+  "certBody": "You passed all 5 timesheet tasks!\nYou've mastered the basics of timing (on ones, twos and threes), mixed timing, and holds (hold lines).",
+  "replay": "Practice again from Q1",
+  "rulesTitle": "📖 Timesheet basics memo",
+  "ruleKey": "Key drawings (keyframes)",
+  "ruleInb": "In-betweens (drawings that connect the keys)",
+  "ruleHold": "Hold (a line that keeps the same drawing)",
+  "ruleBlank": "The previous drawing is held as-is",
+  "blank": "(blank)",
+  "selectAria": "Choose the mark for frame {f}",
+  "clearTitle": "Clear frame {f}",
+  "passTitle": "Pass! A perfect timesheet!",
+  "failTitle": "Retake! Let's review the timing",
+  "failIntro": "Check the frames highlighted in red:",
+  "more": "(and {n} more places to fix)",
+  "errHoldStart": "・Put a hold line “｜” on frame {f} to start the hold.",
+  "errHoldZone": "・Frame {f} is inside the hold section (use the vertical line “｜” or leave it blank).",
+  "errHoldRange": "・Check the hold marks for frames {s}–{e} (either “｜” only on the first frame {s}, or “｜” on every frame {s}–{e}).",
+  "errNeed": "・Frame {f} needs “{label}”.",
+  "errBlank": "・Frame {f} should be blank (the previous drawing is held).",
+  "errWrong": "・The mark on frame {f} is wrong (the answer is “{label}”).",
+  "unfilled": "Not filled yet",
+  "frameStatus": "Frame {f}: {status}",
+  "holdSuffix": " (holding ｜)",
+  "creditName": "Fuffu",
+  "creditContact": "Contact:",
+  "playTitle": "Play the motion with the current timesheet timing"
+ },
+ "ko": {
+  "docTitle": "타임시트 기입 게임 초급편",
+  "title": "타임시트 기입 게임 초급편",
+  "fps": "24fps / 1초 분량",
+  "reset": "진도 리셋",
+  "resetTitle": "학습 진도를 리셋",
+  "stage": "{n}번 문제",
+  "probBadge": "{n}번 문제 / 총 {total}문제",
+  "hintShow": "💡 힌트 보기",
+  "hintHide": "💡 힌트 숨기기",
+  "hintPrefix": "",
+  "paletteTitle": "소재·지시 파츠 (아래 원화란으로 드래그&드롭하거나, 각 프레임의 풀다운에서 선택)",
+  "paletteNote": "지우기는 오른쪽 “×” 버튼 또는 풀다운의 “(공백)”으로 조작",
+  "sheetChip": "A셀 (원화란)",
+  "colFrame": "프레임",
+  "colKey": "원화",
+  "colSelect": "풀다운 선택",
+  "sheetNote": "※6프레임마다 굵은 선 (1초 = 24프레임)",
+  "clearSheet": "시트 지우기",
+  "previewTitle": "움직임 미리보기 재생 (24fps)",
+  "idle": "대기 중",
+  "judgeTitle": "시트 제출·움직임 확인",
+  "judgeDesc": "기입이 끝나면 “움직임 확인”으로 재생하거나 “채점하기”를 눌러 확인하세요.",
+  "check": "채점하기",
+  "play": "움직임 확인",
+  "stop": "정지",
+  "next": "다음 문제로",
+  "certTitle": "타임시트 기입 게임 초급편 수료",
+  "certBody": "전 5문제의 타임시트 기입 과제를 모두 합격했습니다!\n프레임 간격(1·2·3프레임), 변칙 간격, 홀드(홀드선)의 기초를 마스터했습니다.",
+  "replay": "1번 문제부터 다시 연습하기",
+  "rulesTitle": "📖 타임시트 기본 규칙 메모",
+  "ruleKey": "원화 (키프레임)",
+  "ruleInb": "중간 그림 (원화와 원화 사이를 잇는 동화)",
+  "ruleHold": "홀드 (같은 그림을 유지하는 홀드선)",
+  "ruleBlank": "바로 앞 그림을 그대로 유지",
+  "blank": "(공백)",
+  "selectAria": "{f}프레임의 지시를 선택",
+  "clearTitle": "{f}프레임을 공백으로 하기",
+  "passTitle": "합격! 완벽한 타임시트입니다!",
+  "failTitle": "리테이크! 프레임 간격을 다시 확인하세요",
+  "failIntro": "빨갛게 표시된 프레임을 확인하세요:",
+  "more": "(그 밖에 {n}곳의 수정점이 있습니다)",
+  "errHoldStart": "・{f}프레임에 홀드선 “｜”을 넣어 홀드를 시작하세요.",
+  "errHoldZone": "・{f}프레임은 홀드 구간입니다 (세로선 “｜” 또는 공백으로 합니다).",
+  "errHoldRange": "・{s}~{e}프레임의 홀드 지시를 확인하세요 (첫 {s}프레임에만 “｜”, 또는 {s}~{e}프레임 모두에 “｜”).",
+  "errNeed": "・{f}프레임에 “{label}”이 필요합니다.",
+  "errBlank": "・{f}프레임은 공백(바로 앞 그림을 유지)으로 두는 곳입니다.",
+  "errWrong": "・{f}프레임의 기호가 다릅니다 (정답은 “{label}”).",
+  "unfilled": "미기입",
+  "frameStatus": "{f}프레임: {status}",
+  "holdSuffix": " (홀드 중｜)",
+  "creditName": "Fuffu",
+  "creditContact": "문의:",
+  "playTitle": "지금 타임시트의 타이밍으로 움직임 재생"
+ },
+ "zh": {
+  "docTitle": "时间表填写游戏 初级篇",
+  "title": "时间表填写游戏 初级篇",
+  "fps": "24fps / 1秒时长",
+  "reset": "重置进度",
+  "resetTitle": "重置学习进度",
+  "stage": "第{n}题",
+  "probBadge": "第{n}题 / 共{total}题",
+  "hintShow": "💡 查看提示",
+  "hintHide": "💡 隐藏提示",
+  "hintPrefix": "",
+  "paletteTitle": "素材·指示部件（拖放到下方原画栏，或从每一帧的下拉菜单中选择）",
+  "paletteNote": "清除时使用右侧的“×”按钮，或在下拉菜单中选择“（空白）”",
+  "sheetChip": "A赛璐璐（原画栏）",
+  "colFrame": "帧",
+  "colKey": "原画",
+  "colSelect": "下拉选择",
+  "sheetNote": "※每6帧一条粗线（1秒＝24帧）",
+  "clearSheet": "清空表格",
+  "previewTitle": "动作预览播放 (24fps)",
+  "idle": "待机中",
+  "judgeTitle": "提交表格·确认动作",
+  "judgeDesc": "填写完成后，用“查看动作”播放，或按“评分”确认。",
+  "check": "评分",
+  "play": "查看动作",
+  "stop": "停止",
+  "next": "下一题",
+  "certTitle": "时间表填写游戏 初级篇 结业",
+  "certBody": "全部 5 道时间表填写课题都合格了！\n已经掌握了帧间隔（一格一拍·二格一拍·三格一拍）、变速拍法和止格（保持线）的基础。",
+  "replay": "从第1题再练习一次",
+  "rulesTitle": "📖 时间表基本规则备忘",
+  "ruleKey": "原画（关键帧）",
+  "ruleInb": "中间画（连接原画与原画的动画）",
+  "ruleHold": "止格（保持同一张画的保持线）",
+  "ruleBlank": "直接沿用前一张画",
+  "blank": "（空白）",
+  "selectAria": "选择第{f}帧的指示",
+  "clearTitle": "把第{f}帧设为空白",
+  "passTitle": "合格！完美的时间表！",
+  "failTitle": "重来！再检查一下拍法",
+  "failIntro": "请确认标红的帧：",
+  "more": "（另有 {n} 处需要修改）",
+  "errHoldStart": "・请在第 {f} 帧放入保持线“｜”，开始止格。",
+  "errHoldZone": "・第 {f} 帧是止格区间（使用竖线“｜”或留空）。",
+  "errHoldRange": "・请确认第 {s}〜{e} 帧的止格指示（只在第一帧 {s} 放“｜”，或在 {s}〜{e} 帧全部放“｜”）。",
+  "errNeed": "・第 {f} 帧需要“{label}”。",
+  "errBlank": "・第 {f} 帧应留空（沿用前一张画）。",
+  "errWrong": "・第 {f} 帧的符号不对（正确答案是“{label}”）。",
+  "unfilled": "未填写",
+  "frameStatus": "第{f}帧: {status}",
+  "holdSuffix": "（保持中｜）",
+  "creditName": "Fuffu",
+  "creditContact": "联系方式：",
+  "playTitle": "按当前时间表的时机播放动作"
+ },
+ "fr": {
+  "docTitle": "Jeu de feuille d’exposition — Débutant",
+  "title": "Jeu de feuille d’exposition — Débutant",
+  "fps": "24 ips / 1 s",
+  "reset": "Réinitialiser",
+  "resetTitle": "Réinitialiser la progression",
+  "stage": "Q{n}",
+  "probBadge": "Question {n} / {total}",
+  "hintShow": "💡 Voir l’indice",
+  "hintHide": "💡 Masquer l’indice",
+  "hintPrefix": "[Indice] ",
+  "paletteTitle": "Pièces à placer (glisse-dépose dans la colonne genga ci-dessous, ou choisis dans le menu de chaque image)",
+  "paletteNote": "Pour effacer, utilise le bouton « × » à droite ou « (vide) » dans le menu",
+  "sheetChip": "Cell A (colonne genga)",
+  "colFrame": "Image",
+  "colKey": "Genga",
+  "colSelect": "Menu déroulant",
+  "sheetNote": "*Trait épais toutes les 6 images (1 s = 24 images)",
+  "clearSheet": "Effacer la feuille",
+  "previewTitle": "Aperçu du mouvement (24 ips)",
+  "idle": "En attente",
+  "judgeTitle": "Remettre la feuille et vérifier",
+  "judgeDesc": "Quand tu as fini, lance « Voir le mouvement » ou appuie sur « Corriger » pour vérifier.",
+  "check": "Corriger",
+  "play": "Voir le mouvement",
+  "stop": "Arrêter",
+  "next": "Question suivante",
+  "certTitle": "Jeu de feuille d’exposition (débutant) — Terminé",
+  "certBody": "Tu as réussi les 5 exercices de feuille d’exposition!\nTu maîtrises les bases du rythme (en un, en deux, en trois), du rythme mixte et des maintiens (ligne de maintien).",
+  "replay": "Recommencer à la question 1",
+  "rulesTitle": "📖 Mémo des règles de base",
+  "ruleKey": "Genga (dessins clés)",
+  "ruleInb": "Intermédiaires (dessins entre les genga)",
+  "ruleHold": "Maintien (ligne qui garde le même dessin)",
+  "ruleBlank": "Le dessin précédent est conservé tel quel",
+  "blank": "(vide)",
+  "selectAria": "Choisir la marque de l’image {f}",
+  "clearTitle": "Vider l’image {f}",
+  "passTitle": "Réussi! Une feuille parfaite!",
+  "failTitle": "À refaire! Revois le rythme",
+  "failIntro": "Vérifie les images surlignées en rouge:",
+  "more": "(et encore {n} endroits à corriger)",
+  "errHoldStart": "・Mets une ligne de maintien « ｜ » sur l’image {f} pour commencer le maintien.",
+  "errHoldZone": "・L’image {f} est dans la zone de maintien (ligne verticale « ｜ » ou vide).",
+  "errHoldRange": "・Vérifie les marques de maintien des images {s} à {e} (« ｜ » seulement sur la première image {s}, ou « ｜ » sur toutes les images {s} à {e}).",
+  "errNeed": "・L’image {f} a besoin de « {label} ».",
+  "errBlank": "・L’image {f} doit rester vide (le dessin précédent est conservé).",
+  "errWrong": "・Le symbole de l’image {f} est faux (la réponse est « {label} »).",
+  "unfilled": "Non rempli",
+  "frameStatus": "Image {f}: {status}",
+  "holdSuffix": " (maintenu ｜)",
+  "creditName": "Fuffu",
+  "creditContact": "Contact:",
+  "playTitle": "Lire le mouvement avec le rythme actuel de la feuille"
+ },
+ "es": {
+  "docTitle": "Juego de hoja de tiempos — Nivel inicial",
+  "title": "Juego de hoja de tiempos — Nivel inicial",
+  "fps": "24 fps / 1 s",
+  "reset": "Reiniciar progreso",
+  "resetTitle": "Reiniciar el progreso de aprendizaje",
+  "stage": "P{n}",
+  "probBadge": "Pregunta {n} / {total}",
+  "hintShow": "💡 Ver pista",
+  "hintHide": "💡 Ocultar pista",
+  "hintPrefix": "[Pista] ",
+  "paletteTitle": "Piezas para colocar (arrastra y suelta en la columna de genga de abajo, o elige en el menú de cada fotograma)",
+  "paletteNote": "Para borrar, usa el botón «×» de la derecha o elige «(en blanco)» en el menú",
+  "sheetChip": "Celda A (columna genga)",
+  "colFrame": "Fotograma",
+  "colKey": "Genga",
+  "colSelect": "Menú desplegable",
+  "sheetNote": "*Línea gruesa cada 6 fotogramas (1 s = 24 fotogramas)",
+  "clearSheet": "Borrar la hoja",
+  "previewTitle": "Vista previa del movimiento (24 fps)",
+  "idle": "En espera",
+  "judgeTitle": "Entregar la hoja y comprobar",
+  "judgeDesc": "Cuando termines, reprodúcelo con «Ver el movimiento» o pulsa «Calificar» para comprobarlo.",
+  "check": "Calificar",
+  "play": "Ver el movimiento",
+  "stop": "Detener",
+  "next": "Siguiente pregunta",
+  "certTitle": "Juego de hoja de tiempos (nivel inicial) — Completado",
+  "certBody": "¡Aprobaste las 5 tareas de la hoja de tiempos!\nYa dominas las bases del ritmo (a unos, a doses y a treses), el ritmo mixto y las esperas (línea de espera).",
+  "replay": "Practicar de nuevo desde la P1",
+  "rulesTitle": "📖 Notas de reglas básicas",
+  "ruleKey": "Genga (dibujos clave)",
+  "ruleInb": "Intermedios (dibujos entre los genga)",
+  "ruleHold": "Espera (línea que mantiene el mismo dibujo)",
+  "ruleBlank": "Se mantiene el dibujo anterior tal cual",
+  "blank": "(en blanco)",
+  "selectAria": "Elige la marca del fotograma {f}",
+  "clearTitle": "Dejar en blanco el fotograma {f}",
+  "passTitle": "¡Aprobado! ¡Una hoja perfecta!",
+  "failTitle": "¡A repetir! Revisa el ritmo",
+  "failIntro": "Comprueba los fotogramas marcados en rojo:",
+  "more": "(y {n} lugares más por corregir)",
+  "errHoldStart": "・Pon una línea de espera «｜» en el fotograma {f} para empezar la espera.",
+  "errHoldZone": "・El fotograma {f} está en la zona de espera (línea vertical «｜» o en blanco).",
+  "errHoldRange": "・Comprueba las marcas de espera de los fotogramas {s}–{e} («｜» solo en el primer fotograma {s}, o «｜» en todos los fotogramas {s}–{e}).",
+  "errNeed": "・El fotograma {f} necesita «{label}».",
+  "errBlank": "・El fotograma {f} debe quedar en blanco (se mantiene el dibujo anterior).",
+  "errWrong": "・El símbolo del fotograma {f} está mal (la respuesta es «{label}»).",
+  "unfilled": "Sin rellenar",
+  "frameStatus": "Fotograma {f}: {status}",
+  "holdSuffix": " (en espera ｜)",
+  "creditName": "Fuffu",
+  "creditContact": "Contacto:",
+  "playTitle": "Reproducir el movimiento con el ritmo actual de la hoja"
+ },
+ "ar": {
+  "docTitle": "لعبة ملء ورقة التوقيت — المستوى الابتدائي",
+  "title": "لعبة ملء ورقة التوقيت — المستوى الابتدائي",
+  "fps": "24 إطارًا / ثانية واحدة",
+  "reset": "إعادة التقدم",
+  "resetTitle": "إعادة تعيين تقدم التعلم",
+  "stage": "س{n}",
+  "probBadge": "السؤال {n} / {total}",
+  "hintShow": "💡 عرض التلميح",
+  "hintHide": "💡 إخفاء التلميح",
+  "hintPrefix": "[تلميح] ",
+  "paletteTitle": "القطع المراد وضعها (اسحب وأفلت في عمود الرسوم الأساسية بالأسفل، أو اختر من قائمة كل إطار)",
+  "paletteNote": "للمسح، استخدم زر «×» على اليمين أو اختر «(فارغ)» من القائمة",
+  "sheetChip": "الخلية A (عمود الرسوم الأساسية)",
+  "colFrame": "الإطار",
+  "colKey": "الرسم الأساسي",
+  "colSelect": "القائمة المنسدلة",
+  "sheetNote": "*خط سميك كل 6 إطارات (ثانية واحدة = 24 إطارًا)",
+  "clearSheet": "مسح الورقة",
+  "previewTitle": "معاينة الحركة (24 إطارًا)",
+  "idle": "في الانتظار",
+  "judgeTitle": "تسليم الورقة والتحقق من الحركة",
+  "judgeDesc": "عند الانتهاء، شغّل «معاينة الحركة» أو اضغط «التصحيح» للتحقق.",
+  "check": "التصحيح",
+  "play": "معاينة الحركة",
+  "stop": "إيقاف",
+  "next": "السؤال التالي",
+  "certTitle": "لعبة ملء ورقة التوقيت (المستوى الابتدائي) — اكتملت",
+  "certBody": "لقد نجحت في جميع مهام ورقة التوقيت الخمس!\nأتقنت أساسيات التوقيت (كل إطار، كل إطارين، كل 3 إطارات) والتوقيت المختلط والتثبيت (خط التثبيت).",
+  "replay": "التدرب من جديد من السؤال 1",
+  "rulesTitle": "📖 مذكرة القواعد الأساسية لورقة التوقيت",
+  "ruleKey": "الرسوم الأساسية (الإطارات الرئيسية)",
+  "ruleInb": "الرسوم البينية (رسوم تصل بين الرسوم الأساسية)",
+  "ruleHold": "التثبيت (خط يبقي الرسم نفسه)",
+  "ruleBlank": "يبقى الرسم السابق كما هو",
+  "blank": "(فارغ)",
+  "selectAria": "اختر علامة الإطار {f}",
+  "clearTitle": "إفراغ الإطار {f}",
+  "passTitle": "ناجح! ورقة توقيت مثالية!",
+  "failTitle": "إعادة! راجع التوقيت",
+  "failIntro": "تحقق من الإطارات المظللة بالأحمر:",
+  "more": "(وهناك {n} أماكن أخرى للتصحيح)",
+  "errHoldStart": "・ضع خط تثبيت «｜» في الإطار {f} لبدء التثبيت.",
+  "errHoldZone": "・الإطار {f} داخل منطقة التثبيت (استخدم الخط العمودي «｜» أو اتركه فارغًا).",
+  "errHoldRange": "・تحقق من علامات التثبيت للإطارات {s}–{e} («｜» في الإطار الأول {s} فقط، أو «｜» في كل الإطارات {s}–{e}).",
+  "errNeed": "・الإطار {f} يحتاج إلى «{label}».",
+  "errBlank": "・يجب أن يكون الإطار {f} فارغًا (يبقى الرسم السابق).",
+  "errWrong": "・علامة الإطار {f} خاطئة (الإجابة هي «{label}»).",
+  "unfilled": "غير مملوء بعد",
+  "frameStatus": "الإطار {f}: {status}",
+  "holdSuffix": " (قيد التثبيت ｜)",
+  "creditName": "Fuffu",
+  "creditContact": "للتواصل:",
+  "playTitle": "تشغيل الحركة بتوقيت الورقة الحالي"
+ },
+ "th": {
+  "docTitle": "เกมกรอกไทม์ชีต ระดับเริ่มต้น",
+  "title": "เกมกรอกไทม์ชีต ระดับเริ่มต้น",
+  "fps": "24fps / ความยาว 1 วินาที",
+  "reset": "รีเซ็ตความคืบหน้า",
+  "resetTitle": "รีเซ็ตความคืบหน้าในการเรียน",
+  "stage": "ข้อ {n}",
+  "probBadge": "ข้อ {n} / ทั้งหมด {total} ข้อ",
+  "hintShow": "💡 ดูคำใบ้",
+  "hintHide": "💡 ซ่อนคำใบ้",
+  "hintPrefix": "[คำใบ้] ",
+  "paletteTitle": "ชิ้นส่วนสำหรับวาง (ลากไปวางในช่องคีย์เฟรมด้านล่าง หรือเลือกจากเมนูของแต่ละเฟรม)",
+  "paletteNote": "การลบใช้ปุ่ม “×” ทางขวา หรือเลือก “(ว่าง)” ในเมนู",
+  "sheetChip": "เซล A (ช่องคีย์เฟรม)",
+  "colFrame": "เฟรม",
+  "colKey": "คีย์เฟรม",
+  "colSelect": "เลือกจากเมนู",
+  "sheetNote": "※เส้นหนาทุก 6 เฟรม (1 วินาที = 24 เฟรม)",
+  "clearSheet": "ล้างชีต",
+  "previewTitle": "เล่นตัวอย่างการเคลื่อนไหว (24fps)",
+  "idle": "รออยู่",
+  "judgeTitle": "ส่งชีตและตรวจการเคลื่อนไหว",
+  "judgeDesc": "เมื่อกรอกเสร็จแล้ว ให้เล่นด้วย “ดูการเคลื่อนไหว” หรือกด “ตรวจคำตอบ” เพื่อตรวจสอบ",
+  "check": "ตรวจคำตอบ",
+  "play": "ดูการเคลื่อนไหว",
+  "stop": "หยุด",
+  "next": "ข้อต่อไป",
+  "certTitle": "เกมกรอกไทม์ชีต ระดับเริ่มต้น จบหลักสูตร",
+  "certBody": "สอบผ่านงานกรอกไทม์ชีตครบทั้ง 5 ข้อแล้ว!\nเชี่ยวชาญพื้นฐานของจังหวะ (ทุกเฟรม / ทุก 2 เฟรม / ทุก 3 เฟรม) จังหวะผสม และการโฮลด์ (เส้นโฮลด์) แล้ว",
+  "replay": "ฝึกอีกครั้งตั้งแต่ข้อ 1",
+  "rulesTitle": "📖 บันทึกกฎพื้นฐานของไทม์ชีต",
+  "ruleKey": "คีย์เฟรม (ภาพหลัก)",
+  "ruleInb": "อินบีทวีน (ภาพที่เชื่อมระหว่างคีย์เฟรม)",
+  "ruleHold": "โฮลด์ (เส้นที่คงภาพเดิมไว้)",
+  "ruleBlank": "ใช้ภาพก่อนหน้าต่อไปตามเดิม",
+  "blank": "(ว่าง)",
+  "selectAria": "เลือกเครื่องหมายของเฟรม {f}",
+  "clearTitle": "ทำให้เฟรม {f} ว่าง",
+  "passTitle": "ผ่าน! ไทม์ชีตสมบูรณ์แบบ!",
+  "failTitle": "ถ่ายใหม่! ลองทบทวนจังหวะดู",
+  "failIntro": "ตรวจสอบเฟรมที่ไฮไลต์สีแดง:",
+  "more": "(มีอีก {n} จุดที่ต้องแก้)",
+  "errHoldStart": "・ใส่เส้นโฮลด์ “｜” ที่เฟรม {f} เพื่อเริ่มการโฮลด์",
+  "errHoldZone": "・เฟรม {f} อยู่ในช่วงโฮลด์ (ใช้เส้นตั้ง “｜” หรือเว้นว่าง)",
+  "errHoldRange": "・ตรวจสอบเครื่องหมายโฮลด์ของเฟรม {s}〜{e} (ใส่ “｜” ที่เฟรมแรก {s} เท่านั้น หรือใส่ “｜” ทุกเฟรม {s}〜{e})",
+  "errNeed": "・เฟรม {f} ต้องการ “{label}”",
+  "errBlank": "・เฟรม {f} ควรเว้นว่าง (ใช้ภาพก่อนหน้าต่อไป)",
+  "errWrong": "・เครื่องหมายของเฟรม {f} ไม่ถูกต้อง (คำตอบคือ “{label}”)",
+  "unfilled": "ยังไม่กรอก",
+  "frameStatus": "เฟรม {f}: {status}",
+  "holdSuffix": " (กำลังโฮลด์｜)",
+  "creditName": "Fuffu",
+  "creditContact": "ติดต่อ:",
+  "playTitle": "เล่นการเคลื่อนไหวตามจังหวะของชีตปัจจุบัน"
+ }
+};
+        const STAMP_T = {
+ "en": {
+  "KEY_1": {
+   "label": "Key A①",
+   "sub": "1st key drawing"
+  },
+  "KEY_2": {
+   "label": "Key A②",
+   "sub": "2nd key drawing"
+  },
+  "KEY_3": {
+   "label": "Key A③",
+   "sub": "3rd key drawing"
+  },
+  "INBETWEEN": {
+   "label": "In-between (・)",
+   "sub": "One in-between drawing"
+  },
+  "HOLD": {
+   "label": "Hold line (｜)",
+   "sub": "Keeps the same drawing"
+  }
+ },
+ "ko": {
+  "KEY_1": {
+   "label": "원화 A①",
+   "sub": "첫 번째 원화"
+  },
+  "KEY_2": {
+   "label": "원화 A②",
+   "sub": "두 번째 원화"
+  },
+  "KEY_3": {
+   "label": "원화 A③",
+   "sub": "세 번째 원화"
+  },
+  "INBETWEEN": {
+   "label": "인비트윈 (・)",
+   "sub": "동화 1장 분"
+  },
+  "HOLD": {
+   "label": "홀드선 (｜)",
+   "sub": "같은 그림을 유지"
+  }
+ },
+ "zh": {
+  "KEY_1": {
+   "label": "原画 A①",
+   "sub": "第1张原画"
+  },
+  "KEY_2": {
+   "label": "原画 A②",
+   "sub": "第2张原画"
+  },
+  "KEY_3": {
+   "label": "原画 A③",
+   "sub": "第3张原画"
+  },
+  "INBETWEEN": {
+   "label": "中间画 (・)",
+   "sub": "1张中间画"
+  },
+  "HOLD": {
+   "label": "保持线 (｜)",
+   "sub": "保持同一张画"
+  }
+ },
+ "fr": {
+  "KEY_1": {
+   "label": "Genga A①",
+   "sub": "1er genga"
+  },
+  "KEY_2": {
+   "label": "Genga A②",
+   "sub": "2e genga"
+  },
+  "KEY_3": {
+   "label": "Genga A③",
+   "sub": "3e genga"
+  },
+  "INBETWEEN": {
+   "label": "Intermédiaire (・)",
+   "sub": "Un dessin intermédiaire"
+  },
+  "HOLD": {
+   "label": "Ligne de maintien (｜)",
+   "sub": "Garde le même dessin"
+  }
+ },
+ "es": {
+  "KEY_1": {
+   "label": "Genga A①",
+   "sub": "1er genga"
+  },
+  "KEY_2": {
+   "label": "Genga A②",
+   "sub": "2º genga"
+  },
+  "KEY_3": {
+   "label": "Genga A③",
+   "sub": "3er genga"
+  },
+  "INBETWEEN": {
+   "label": "Intermedio (・)",
+   "sub": "Un dibujo intermedio"
+  },
+  "HOLD": {
+   "label": "Línea de espera (｜)",
+   "sub": "Mantiene el mismo dibujo"
+  }
+ },
+ "ar": {
+  "KEY_1": {
+   "label": "الرسم الأساسي A①",
+   "sub": "أول رسم أساسي"
+  },
+  "KEY_2": {
+   "label": "الرسم الأساسي A②",
+   "sub": "ثاني رسم أساسي"
+  },
+  "KEY_3": {
+   "label": "الرسم الأساسي A③",
+   "sub": "ثالث رسم أساسي"
+  },
+  "INBETWEEN": {
+   "label": "البيني (・)",
+   "sub": "رسم بيني واحد"
+  },
+  "HOLD": {
+   "label": "خط التثبيت (｜)",
+   "sub": "يبقي الرسم نفسه"
+  }
+ },
+ "th": {
+  "KEY_1": {
+   "label": "คีย์เฟรม A①",
+   "sub": "คีย์เฟรมแผ่นที่ 1"
+  },
+  "KEY_2": {
+   "label": "คีย์เฟรม A②",
+   "sub": "คีย์เฟรมแผ่นที่ 2"
+  },
+  "KEY_3": {
+   "label": "คีย์เฟรม A③",
+   "sub": "คีย์เฟรมแผ่นที่ 3"
+  },
+  "INBETWEEN": {
+   "label": "อินบีทวีน (・)",
+   "sub": "ภาพอินบีทวีน 1 แผ่น"
+  },
+  "HOLD": {
+   "label": "เส้นโฮลด์ (｜)",
+   "sub": "คงภาพเดิมไว้"
+  }
+ }
+};
+        const PROB_T = {
+ "en": {
+  "1": {
+   "tag": "On threes",
+   "title": "Q1: On threes",
+   "description": "Fill in the timesheet so that 3 in-betweens go between key drawings A① and A②. (On threes)\n(*Place key drawing “①” on frame 1.)",
+   "hint": "“On threes” means each drawing is shown for 3 frames. Put “①” on frame 1, leave frames 2 and 3 blank, and put the first in-between “・” on frame 4. Keep placing one every 3 frames!",
+   "explanation": "Well done! This is the basic form of “on threes”, the most common timing in Japanese TV anime.\n・Frames 1–3: Key ① (3 frames)\n・Frames 4–6: In-between 1 (3 frames)\n・Frames 7–9: In-between 2 (3 frames)\n・Frames 10–12: In-between 3 (3 frames)\n・Frame 13 onward: Key ②\nLeaving 2 frames blank between marks creates the rhythm of the drawing changing every 3 frames!"
+  },
+  "2": {
+   "tag": "On twos",
+   "title": "Q2: On twos",
+   "description": "Fill in the timesheet so that 2 in-betweens go between key drawings A① and A②. (On twos)\n(*Place key drawing “①” on frame 1.)",
+   "hint": "“On twos” means each drawing is shown for 2 frames. Put “①” on frame 1, leave frame 2 blank, put the first in-between “・” on frame 3, the second “・” on frame 5, and key “②” on frame 7!",
+   "explanation": "Perfect! “On twos” uses 12 drawings per second, so it's often used for smooth action and everyday acting.\n・Frames 1–2: Key ① (2 frames)\n・Frames 3–4: In-between 1 (2 frames)\n・Frames 5–6: In-between 2 (2 frames)\n・Frame 7 onward: Key ②\nThe trick is the steady rhythm of skipping one frame each time!"
+  },
+  "3": {
+   "tag": "On ones",
+   "title": "Q3: On ones",
+   "description": "Fill in the timesheet so that 3 in-betweens go between key drawings A① and A②. (On ones)\n(*Place key drawing “①” on frame 1.)",
+   "hint": "“On ones” changes the drawing on every frame at 24fps. Make no blanks: from frame 1, line up “①”, “・”, “・”, “・”, “②” in a row!",
+   "explanation": "Correct! “On ones (full animation)” changes the drawing every frame, so it's used for intense action, fast camera pans, effects, and so on.\n・Frame 1: Key ①\n・Frame 2: In-between 1\n・Frame 3: In-between 2\n・Frame 4: In-between 3\n・Frame 5 onward: Key ②\nFeel the speed of rushing through in just 5 frames in the preview!"
+  },
+  "4": {
+   "tag": "Mixed timing",
+   "title": "Q4: Mixed timing",
+   "description": "Place key “①” on frame 1, start “on threes”, then give the first in-between “on twos”, and the second in-between “on ones” to reach key “②”. (2 in-betweens)",
+   "hint": "Frame 1: “①” (on threes, so it shows on frames 1–3) → Frame 4: first in-between “・” (on twos, frames 4–5) → Frame 6: second in-between “・” (on ones, frame 6 only) → Frame 7: key “②”!",
+   "explanation": "Wonderful! This is mixed timing that tightens the spacing: on threes → on twos → on ones!\n・Frames 1–3 (on threes): Key ①\n・Frames 4–5 (on twos): In-between 1\n・Frame 6 (on ones): In-between 2\n・Frame 7: Reaches key ②!"
+  },
+  "5": {
+   "tag": "Moving out of a hold",
+   "title": "Q5: Moving out of a hold",
+   "description": "Show A① as a 6-frame hold, then add 2 in-betweens (on twos) to reach A②.\n(*Place key “①” on frame 1. The hold line may be drawn only on the first frame of the hold section, or on the whole section — both are OK.)",
+   "hint": "Put “①” on frame 1 and make the next 5 frames (2–6) a hold (hold line “｜”) so A① is shown for 6 frames in total. The hold line is OK either only on the first frame of the section (frame 2), or on every frame 2–6! After that, add 2 in-betweens “・” on twos to reach A②!",
+   "explanation": "Perfect! After showing A① firmly with a 6-frame hold (frame 1's ① plus the hold lines on frames 2–6), inserting 2 in-betweens on twos to reach A② gives a sharp start after a pause.\n\n*The hold line is OK either only on the first frame of the hold section (frame 2) with the rest blank, or drawn across the whole section (frames 2–6)!"
+  }
+ },
+ "ko": {
+  "1": {
+   "tag": "3프레임 간격",
+   "title": "제1문제: 3프레임 간격",
+   "description": "원화 A①에서 A② 사이에 중간 그림을 3장 넣도록 타임시트를 작성하세요. (3프레임 간격)\n(※1프레임에 원화 “①”을 배치하세요)",
+   "hint": "“3프레임 간격”은 그림 1장을 3프레임씩 보여주는 방식입니다. 1프레임에 “①”을 쓴 뒤 2·3프레임은 비워 두고, 4프레임에 첫 중간 그림 “・”을 넣으세요. 같은 식으로 3프레임마다 배치해 봅시다!",
+   "explanation": "훌륭합니다! 일본 TV 애니메이션에서 가장 많이 쓰이는 “3프레임 간격”의 기본형입니다.\n・1~3프레임: 원화 ① (3프레임)\n・4~6프레임: 중간 그림 1장째 (3프레임)\n・7~9프레임: 중간 그림 2장째 (3프레임)\n・10~12프레임: 중간 그림 3장째 (3프레임)\n・13프레임~: 원화 ②\n사이를 2프레임 비우는 것으로 “3프레임마다 그림이 바뀌는” 리듬이 됩니다!"
+  },
+  "2": {
+   "tag": "2프레임 간격",
+   "title": "제2문제: 2프레임 간격",
+   "description": "원화 A①에서 A② 사이에 중간 그림을 2장 넣도록 타임시트를 작성하세요. (2프레임 간격)\n(※1프레임에 원화 “①”을 배치하세요)",
+   "hint": "“2프레임 간격”은 그림 1장을 2프레임씩 보여주는 방식입니다. 1프레임에 “①”을 두고 2프레임은 비운 뒤, 3프레임에 중간 그림 1장째 “・”, 5프레임에 2장째 “・”, 그리고 7프레임에 원화 “②”를 배치하세요!",
+   "explanation": "완벽합니다! “2프레임 간격”은 1초에 12장의 그림을 쓰기 때문에 액션과 일상 연기의 부드러운 움직임에 많이 쓰입니다.\n・1~2프레임: 원화 ① (2프레임)\n・3~4프레임: 중간 그림 1장째 (2프레임)\n・5~6프레임: 중간 그림 2장째 (2프레임)\n・7프레임~: 원화 ②\n1프레임씩 건너뛰며 리듬감 있게 기입하는 것이 포인트입니다!"
+  },
+  "3": {
+   "tag": "1프레임 간격",
+   "title": "제3문제: 1프레임 간격",
+   "description": "원화 A①에서 A② 사이에 중간 그림을 3장 넣도록 타임시트를 작성하세요. (1프레임 간격)\n(※1프레임에 원화 “①”을 배치하세요)",
+   "hint": "“1프레임 간격”은 24fps의 매 프레임 그림이 바뀝니다. 공백을 만들지 말고 1프레임부터 순서대로 “①” “・” “・” “・” “②”를 연속으로 나열해 보세요!",
+   "explanation": "정답입니다! “1프레임 간격(풀 프레임)”은 매 프레임 그림이 바뀌어 격렬한 액션, 고속 카메라 패닝, 이펙트 등에 쓰입니다.\n・1프레임: 원화 ①\n・2프레임: 중간 그림 1장째\n・3프레임: 중간 그림 2장째\n・4프레임: 중간 그림 3장째\n・5프레임~: 원화 ②\n단 5프레임으로 단숨에 달려 나가는 속도감을 미리보기로 확인해 보세요!"
+  },
+  "4": {
+   "tag": "변칙 간격",
+   "title": "제4문제: 변칙 간격",
+   "description": "1프레임에 원화 “①”을 두고, 처음은 “3프레임 간격”, 다음 중간 그림 1장째를 “2프레임 간격”, 마지막 중간 그림 2장째를 “1프레임 간격”으로 해서 원화 “②”로 잇는 타임시트를 작성하세요. (중간 그림 2장)",
+   "hint": "1프레임에 “①”(3프레임 간격이므로 1~3프레임까지 표시) → 4프레임에 중간 그림 1장째 “・”(2프레임 간격이므로 4~5프레임까지 표시) → 6프레임에 중간 그림 2장째 “・”(1프레임 간격이므로 6프레임만) → 7프레임에 원화 “②”를 배치합니다!",
+   "explanation": "훌륭합니다! 3프레임 간격 → 2프레임 간격 → 1프레임 간격으로 간격을 좁혀 가는 변칙 간격의 타이밍 표현입니다!\n・1~3프레임(3프레임 간격): 원화 ①\n・4~5프레임(2프레임 간격): 중간 그림 1장째\n・6프레임(1프레임 간격): 중간 그림 2장째\n・7프레임: 원화 ②에 도달!"
+  },
+  "5": {
+   "tag": "홀드에서 움직임 시작",
+   "title": "제5문제: 홀드에서 움직임 시작",
+   "description": "A①을 6프레임 홀드로 보여준 뒤, 중간 그림을 2장(2프레임 간격) 넣어 A②로 이으세요.\n(※1프레임에 원화 “①”을 배치하세요. 홀드선은 홀드 구간의 첫 프레임에만 그어도, 구간 전체에 그어도 둘 다 OK입니다)",
+   "hint": "1프레임에 “①”을 두고 이어지는 5프레임(2~6프레임)을 홀드(홀드선 “｜”)로 하면 A①을 총 6프레임 홀드로 보여줄 수 있습니다. 홀드선은 홀드 구간의 첫 프레임(2프레임)에만 “｜”을 넣어도, 2~6프레임 전부에 “｜”을 그어도 둘 다 정답입니다. 그 후 2프레임 간격으로 중간 그림 “・”을 2장 넣어 A②로 이으세요!",
+   "explanation": "완벽합니다! A①을 6프레임 홀드(1프레임의 ① + 2~6프레임의 홀드선)로 확실히 보여준 뒤, 중간 그림 “・”을 2프레임 간격으로 2장 끼워 A②로 이으면, 멈춤 뒤의 날카로운 움직임 시작을 표현할 수 있습니다.\n\n※홀드선은 홀드 구간의 첫 1프레임(2프레임)에만 쓰고 나머지를 공백으로 해도, 구간 전체(2~6프레임)에 그어도 둘 다 OK입니다!"
+  }
+ },
+ "zh": {
+  "1": {
+   "tag": "三格一拍",
+   "title": "第1题：三格一拍",
+   "description": "请填写时间表，在原画 A① 到 A② 之间加入 3 张中间画。（三格一拍）\n（※请把原画“①”放在第 1 帧）",
+   "hint": "“三格一拍”是每张画显示 3 帧的方式。在第 1 帧写上“①”后，第 2、3 帧留空，在第 4 帧放入第一张中间画“・”。照这样每隔 3 帧放一张吧！",
+   "explanation": "太棒了！这就是日本电视动画中最常用的“三格一拍”基本形。\n・第1〜3帧：原画①（3帧）\n・第4〜6帧：中间画第1张（3帧）\n・第7〜9帧：中间画第2张（3帧）\n・第10〜12帧：中间画第3张（3帧）\n・第13帧起：原画②\n中间留空 2 帧，就形成了“每 3 帧换一张画”的节奏！"
+  },
+  "2": {
+   "tag": "二格一拍",
+   "title": "第2题：二格一拍",
+   "description": "请填写时间表，在原画 A① 到 A② 之间加入 2 张中间画。（二格一拍）\n（※请把原画“①”放在第 1 帧）",
+   "hint": "“二格一拍”是每张画显示 2 帧的拍法。在第 1 帧放上“①”，第 2 帧留空，第 3 帧放中间画第1张“・”，第 5 帧放第2张“・”，第 7 帧放原画“②”！",
+   "explanation": "完全正确！“二格一拍”每秒使用 12 张画，常用于动作和日常表演的流畅运动。\n・第1〜2帧：原画①（2帧）\n・第3〜4帧：中间画第1张（2帧）\n・第5〜6帧：中间画第2张（2帧）\n・第7帧起：原画②\n要点是隔一帧一张、节奏整齐地填写！"
+  },
+  "3": {
+   "tag": "一格一拍",
+   "title": "第3题：一格一拍",
+   "description": "请填写时间表，在原画 A① 到 A② 之间加入 3 张中间画。（一格一拍）\n（※请把原画“①”放在第 1 帧）",
+   "hint": "“一格一拍”在 24fps 下每一帧都换画。不要留空，从第 1 帧起依次连续排列“①”“・”“・”“・”“②”吧！",
+   "explanation": "答对了！“一格一拍（全动画）”每一帧都换画，用于激烈的动作、高速摇镜、特效等。\n・第1帧：原画①\n・第2帧：中间画第1张\n・第3帧：中间画第2张\n・第4帧：中间画第3张\n・第5帧起：原画②\n仅仅 5 帧一口气冲过去的速度感，请在预览里确认吧！"
+  },
+  "4": {
+   "tag": "变速拍法",
+   "title": "第4题：变速拍法",
+   "description": "在第 1 帧放原画“①”，先用“三格一拍”，接着中间画第1张用“二格一拍”，最后中间画第2张用“一格一拍”，连接到原画“②”。（中间画 2 张）",
+   "hint": "第 1 帧放“①”（三格一拍，显示第1〜3帧）→ 第 4 帧放中间画第1张“・”（二格一拍，显示第4〜5帧）→ 第 6 帧放中间画第2张“・”（一格一拍，只显示第6帧）→ 第 7 帧放原画“②”！",
+   "explanation": "太出色了！这是从三格一拍 → 二格一拍 → 一格一拍、间隔逐渐收紧的变速拍法！\n・第1〜3帧（三格一拍）：原画①\n・第4〜5帧（二格一拍）：中间画第1张\n・第6帧（一格一拍）：中间画第2张\n・第7帧：到达原画②！"
+  },
+  "5": {
+   "tag": "从止格开始动",
+   "title": "第5题：从止格开始动",
+   "description": "先把 A① 以 6 帧止格显示，然后加入 2 张中间画（二格一拍）连接到 A②。\n（※请把原画“①”放在第 1 帧。保持线只画在止格区间的第一帧也可以，画满整个区间也可以，两者都可以）",
+   "hint": "在第 1 帧放“①”，接着把 5 帧（第2〜6帧）设为止格（保持线“｜”），就能让 A① 总共显示 6 帧。保持线只在止格区间的第一帧（第2帧）放“｜”也可以，在第2〜6帧全部放“｜”也可以。之后用二格一拍加入 2 张中间画“・”，连接到 A②吧！",
+   "explanation": "完美！先用 6 帧止格（第1帧的①＋第2〜6帧的保持线）稳稳地展示 A①，再用二格一拍插入 2 张中间画“・”连接到 A②，就能表现出蓄势之后干脆利落的起动。\n\n※保持线只写在止格区间的第一帧（第2帧）、其余留空也可以，画满整个区间（第2〜6帧）也可以！"
+  }
+ },
+ "fr": {
+  "1": {
+   "tag": "En trois",
+   "title": "Q1: En trois",
+   "description": "Remplis la feuille d’exposition pour mettre 3 intermédiaires entre les genga A① et A②. (En trois)\n(*Place le genga « ① » sur l’image 1.)",
+   "hint": "« En trois » signifie que chaque dessin reste affiché 3 images. Mets « ① » sur l’image 1, laisse les images 2 et 3 vides, puis mets le premier intermédiaire « ・ » sur l’image 4. Continue ainsi toutes les 3 images!",
+   "explanation": "Bravo! C’est la forme de base du « en trois », le rythme le plus utilisé dans l’animation TV japonaise.\n・Images 1 à 3: Genga ① (3 images)\n・Images 4 à 6: Intermédiaire 1 (3 images)\n・Images 7 à 9: Intermédiaire 2 (3 images)\n・Images 10 à 12: Intermédiaire 3 (3 images)\n・À partir de l’image 13: Genga ②\nLaisser 2 images vides entre les marques crée le rythme d’un dessin qui change toutes les 3 images!"
+  },
+  "2": {
+   "tag": "En deux",
+   "title": "Q2: En deux",
+   "description": "Remplis la feuille d’exposition pour mettre 2 intermédiaires entre les genga A① et A②. (En deux)\n(*Place le genga « ① » sur l’image 1.)",
+   "hint": "« En deux » signifie que chaque dessin reste affiché 2 images. Mets « ① » sur l’image 1, laisse l’image 2 vide, mets le premier intermédiaire « ・ » sur l’image 3, le deuxième « ・ » sur l’image 5, puis le genga « ② » sur l’image 7!",
+   "explanation": "Parfait! Le « en deux » utilise 12 dessins par seconde, il est donc souvent utilisé pour les actions et les scènes de vie fluides.\n・Images 1 à 2: Genga ① (2 images)\n・Images 3 à 4: Intermédiaire 1 (2 images)\n・Images 5 à 6: Intermédiaire 2 (2 images)\n・À partir de l’image 7: Genga ②\nL’astuce est le rythme régulier, une image sur deux!"
+  },
+  "3": {
+   "tag": "En un",
+   "title": "Q3: En un",
+   "description": "Remplis la feuille d’exposition pour mettre 3 intermédiaires entre les genga A① et A②. (En un)\n(*Place le genga « ① » sur l’image 1.)",
+   "hint": "« En un » change de dessin à chaque image en 24 ips. Ne laisse aucun vide: à partir de l’image 1, aligne « ① », « ・ », « ・ », « ・ », « ② » à la suite!",
+   "explanation": "Exact! Le « en un (animation complète) » change de dessin à chaque image, il est utilisé pour les actions intenses, les panoramiques rapides, les effets, etc.\n・Image 1: Genga ①\n・Image 2: Intermédiaire 1\n・Image 3: Intermédiaire 2\n・Image 4: Intermédiaire 3\n・À partir de l’image 5: Genga ②\nRessens dans l’aperçu la vitesse d’une traversée en seulement 5 images!"
+  },
+  "4": {
+   "tag": "Rythme mixte",
+   "title": "Q4: Rythme mixte",
+   "description": "Place le genga « ① » sur l’image 1, commence « en trois », puis mets le premier intermédiaire « en deux » et le deuxième « en un » pour arriver au genga « ② ». (2 intermédiaires)",
+   "hint": "Image 1: « ① » (en trois, donc affiché sur les images 1 à 3) → Image 4: premier intermédiaire « ・ » (en deux, images 4 à 5) → Image 6: deuxième intermédiaire « ・ » (en un, image 6 seulement) → Image 7: genga « ② »!",
+   "explanation": "Magnifique! C’est un rythme mixte qui resserre les écarts: en trois → en deux → en un!\n・Images 1 à 3 (en trois): Genga ①\n・Images 4 à 5 (en deux): Intermédiaire 1\n・Image 6 (en un): Intermédiaire 2\n・Image 7: Arrivée au genga ②!"
+  },
+  "5": {
+   "tag": "Sortie de maintien",
+   "title": "Q5: Sortie de maintien",
+   "description": "Affiche A① en maintien pendant 6 images, puis ajoute 2 intermédiaires (en deux) pour arriver à A②.\n(*Place le genga « ① » sur l’image 1. La ligne de maintien peut être tracée seulement sur la première image de la zone, ou sur toute la zone — les deux sont acceptés.)",
+   "hint": "Mets « ① » sur l’image 1, puis rends les 5 images suivantes (2 à 6) en maintien (ligne de maintien « ｜ ») pour afficher A① pendant 6 images au total. La ligne de maintien est acceptée soit sur la première image de la zone seulement (image 2), soit sur toutes les images 2 à 6! Ensuite, ajoute 2 intermédiaires « ・ » en deux pour arriver à A②!",
+   "explanation": "Parfait! Après avoir bien montré A① avec un maintien de 6 images (le ① de l’image 1 + les lignes de maintien des images 2 à 6), insérer 2 intermédiaires « ・ » en deux vers A② donne un démarrage net après une pause.\n\n*La ligne de maintien est acceptée soit sur la première image de la zone seulement (image 2), le reste vide, soit sur toute la zone (images 2 à 6)!"
+  }
+ },
+ "es": {
+  "1": {
+   "tag": "A tres",
+   "title": "P1: A tres",
+   "description": "Completa la hoja de tiempos para poner 3 intermedios entre los genga A① y A②. (A tres)\n(*Coloca el genga «①» en el fotograma 1.)",
+   "hint": "«A tres» significa que cada dibujo se muestra durante 3 fotogramas. Pon «①» en el fotograma 1, deja en blanco el 2 y el 3, y pon el primer intermedio «・» en el fotograma 4. ¡Sigue colocando uno cada 3 fotogramas!",
+   "explanation": "¡Muy bien! Esta es la forma básica del «a tres», el ritmo más usado en el anime televisivo japonés.\n・Fotogramas 1–3: Genga ① (3 fotogramas)\n・Fotogramas 4–6: Intermedio 1 (3 fotogramas)\n・Fotogramas 7–9: Intermedio 2 (3 fotogramas)\n・Fotogramas 10–12: Intermedio 3 (3 fotogramas)\n・Desde el fotograma 13: Genga ②\nDejar 2 fotogramas en blanco entre marcas crea el ritmo de cambiar de dibujo cada 3 fotogramas."
+  },
+  "2": {
+   "tag": "A doses",
+   "title": "P2: A doses",
+   "description": "Completa la hoja de tiempos para poner 2 intermedios entre los genga A① y A②. (A doses)\n(*Coloca el genga «①» en el fotograma 1.)",
+   "hint": "«A doses» significa que cada dibujo se muestra durante 2 fotogramas. Pon «①» en el fotograma 1, deja en blanco el 2, pon el primer intermedio «・» en el 3, el segundo «・» en el 5, y el genga «②» en el 7.",
+   "explanation": "¡Perfecto! El «a doses» usa 12 dibujos por segundo, por eso se usa mucho en acciones y actuaciones cotidianas fluidas.\n・Fotogramas 1–2: Genga ① (2 fotogramas)\n・Fotogramas 3–4: Intermedio 1 (2 fotogramas)\n・Fotogramas 5–6: Intermedio 2 (2 fotogramas)\n・Desde el fotograma 7: Genga ②\n¡La clave es el ritmo constante saltando un fotograma cada vez!"
+  },
+  "3": {
+   "tag": "A unos",
+   "title": "P3: A unos",
+   "description": "Completa la hoja de tiempos para poner 3 intermedios entre los genga A① y A②. (A unos)\n(*Coloca el genga «①» en el fotograma 1.)",
+   "hint": "«A unos» cambia el dibujo en cada fotograma a 24 fps. No dejes huecos: desde el fotograma 1, alinea «①», «・», «・», «・», «②» seguidos.",
+   "explanation": "¡Correcto! El «a unos (animación completa)» cambia el dibujo cada fotograma, y se usa en acciones intensas, panorámicas rápidas, efectos, etc.\n・Fotograma 1: Genga ①\n・Fotograma 2: Intermedio 1\n・Fotograma 3: Intermedio 2\n・Fotograma 4: Intermedio 3\n・Desde el fotograma 5: Genga ②\n¡Siente en la vista previa la velocidad de cruzar en solo 5 fotogramas!"
+  },
+  "4": {
+   "tag": "Ritmo mixto",
+   "title": "P4: Ritmo mixto",
+   "description": "Coloca el genga «①» en el fotograma 1, empieza «a tres», luego pon el primer intermedio «a doses» y el segundo «a unos» para llegar al genga «②». (2 intermedios)",
+   "hint": "Fotograma 1: «①» (a tres, se muestra en los fotogramas 1–3) → Fotograma 4: primer intermedio «・» (a doses, fotogramas 4–5) → Fotograma 6: segundo intermedio «・» (a unos, solo el fotograma 6) → Fotograma 7: genga «②».",
+   "explanation": "¡Estupendo! Es un ritmo mixto que va cerrando los intervalos: a tres → a doses → a unos.\n・Fotogramas 1–3 (a tres): Genga ①\n・Fotogramas 4–5 (a doses): Intermedio 1\n・Fotograma 6 (a unos): Intermedio 2\n・Fotograma 7: ¡Llega al genga ②!"
+  },
+  "5": {
+   "tag": "Salir de una espera",
+   "title": "P5: Salir de una espera",
+   "description": "Muestra A① en espera durante 6 fotogramas y luego añade 2 intermedios (a doses) para llegar a A②.\n(*Coloca el genga «①» en el fotograma 1. La línea de espera puede ir solo en el primer fotograma de la zona o en toda la zona; ambas valen.)",
+   "hint": "Pon «①» en el fotograma 1 y haz que los 5 siguientes (2–6) sean espera (línea de espera «｜») para mostrar A① durante 6 fotogramas en total. La línea de espera vale solo en el primer fotograma de la zona (fotograma 2) o en todos los fotogramas 2–6. Después añade 2 intermedios «・» a doses para llegar a A②.",
+   "explanation": "¡Perfecto! Después de mostrar bien A① con una espera de 6 fotogramas (el ① del fotograma 1 + las líneas de espera de los fotogramas 2–6), insertar 2 intermedios «・» a doses hacia A② crea un arranque nítido tras la pausa.\n\n*La línea de espera vale solo en el primer fotograma de la zona (fotograma 2) dejando el resto en blanco, o en toda la zona (fotogramas 2–6)."
+  }
+ },
+ "ar": {
+  "1": {
+   "tag": "كل 3 إطارات",
+   "title": "السؤال 1: كل 3 إطارات",
+   "description": "املأ ورقة التوقيت بحيث تضع 3 رسوم بينية بين الرسمين الأساسيين A① وA②. (كل 3 إطارات)\n(*ضع الرسم الأساسي «①» في الإطار 1.)",
+   "hint": "«كل 3 إطارات» يعني عرض كل رسم لمدة 3 إطارات. ضع «①» في الإطار 1، واترك الإطارين 2 و3 فارغين، ثم ضع أول رسم بيني «・» في الإطار 4. تابع بالوتيرة نفسها كل 3 إطارات!",
+   "explanation": "أحسنت! هذا هو الشكل الأساسي لـ«كل 3 إطارات»، وهو التوقيت الأكثر استخدامًا في الأنمي التلفزيوني الياباني.\n・الإطارات 1–3: الرسم الأساسي ① (3 إطارات)\n・الإطارات 4–6: الرسم البيني 1 (3 إطارات)\n・الإطارات 7–9: الرسم البيني 2 (3 إطارات)\n・الإطارات 10–12: الرسم البيني 3 (3 إطارات)\n・من الإطار 13: الرسم الأساسي ②\nترك إطارين فارغين بين العلامات يصنع إيقاع تغيّر الرسم كل 3 إطارات!"
+  },
+  "2": {
+   "tag": "كل إطارين",
+   "title": "السؤال 2: كل إطارين",
+   "description": "املأ ورقة التوقيت بحيث تضع رسمين بينيين بين الرسمين الأساسيين A① وA②. (كل إطارين)\n(*ضع الرسم الأساسي «①» في الإطار 1.)",
+   "hint": "«كل إطارين» يعني عرض كل رسم لمدة إطارين. ضع «①» في الإطار 1، واترك الإطار 2 فارغًا، وضع أول رسم بيني «・» في الإطار 3، والثاني «・» في الإطار 5، والرسم الأساسي «②» في الإطار 7!",
+   "explanation": "ممتاز! «كل إطارين» يستخدم 12 رسمًا في الثانية، لذا يُستخدم كثيرًا في الأكشن والتمثيل اليومي السلس.\n・الإطاران 1–2: الرسم الأساسي ① (إطاران)\n・الإطاران 3–4: الرسم البيني 1 (إطاران)\n・الإطاران 5–6: الرسم البيني 2 (إطاران)\n・من الإطار 7: الرسم الأساسي ②\nالمهم هو الإيقاع الثابت بتخطي إطار واحد في كل مرة!"
+  },
+  "3": {
+   "tag": "كل إطار",
+   "title": "السؤال 3: كل إطار",
+   "description": "املأ ورقة التوقيت بحيث تضع 3 رسوم بينية بين الرسمين الأساسيين A① وA②. (كل إطار)\n(*ضع الرسم الأساسي «①» في الإطار 1.)",
+   "hint": "«كل إطار» يغيّر الرسم في كل إطار بمعدل 24 إطارًا. لا تترك فراغات: من الإطار 1، رتّب «①» و«・» و«・» و«・» و«②» على التوالي!",
+   "explanation": "صحيح! «كل إطار (تحريك كامل)» يغيّر الرسم في كل إطار، ويُستخدم في الأكشن الشديد وحركات الكاميرا السريعة والمؤثرات وغيرها.\n・الإطار 1: الرسم الأساسي ①\n・الإطار 2: الرسم البيني 1\n・الإطار 3: الرسم البيني 2\n・الإطار 4: الرسم البيني 3\n・من الإطار 5: الرسم الأساسي ②\nاشعر في المعاينة بسرعة العبور في 5 إطارات فقط!"
+  },
+  "4": {
+   "tag": "توقيت مختلط",
+   "title": "السؤال 4: توقيت مختلط",
+   "description": "ضع الرسم الأساسي «①» في الإطار 1، وابدأ بـ«كل 3 إطارات»، ثم اجعل الرسم البيني الأول «كل إطارين» والثاني «كل إطار» للوصول إلى الرسم الأساسي «②». (رسمان بينيان)",
+   "hint": "الإطار 1: «①» (كل 3 إطارات، فيظهر في الإطارات 1–3) ← الإطار 4: أول رسم بيني «・» (كل إطارين، الإطاران 4–5) ← الإطار 6: ثاني رسم بيني «・» (كل إطار، الإطار 6 فقط) ← الإطار 7: الرسم الأساسي «②»!",
+   "explanation": "رائع! هذا توقيت مختلط يضيّق الفواصل تدريجيًا: كل 3 إطارات ← كل إطارين ← كل إطار!\n・الإطارات 1–3 (كل 3 إطارات): الرسم الأساسي ①\n・الإطاران 4–5 (كل إطارين): الرسم البيني 1\n・الإطار 6 (كل إطار): الرسم البيني 2\n・الإطار 7: الوصول إلى الرسم الأساسي ②!"
+  },
+  "5": {
+   "tag": "الخروج من التثبيت",
+   "title": "السؤال 5: الخروج من التثبيت",
+   "description": "اعرض A① مثبتًا لمدة 6 إطارات، ثم أضف رسمين بينيين (كل إطارين) للوصول إلى A②.\n(*ضع الرسم الأساسي «①» في الإطار 1. يجوز رسم خط التثبيت في أول إطار من المنطقة فقط أو في المنطقة كلها.)",
+   "hint": "ضع «①» في الإطار 1، واجعل الإطارات الخمسة التالية (2–6) تثبيتًا (خط التثبيت «｜») لعرض A① لمدة 6 إطارات في المجموع. يجوز وضع خط التثبيت في أول إطار من المنطقة فقط (الإطار 2) أو في كل الإطارات 2–6! بعد ذلك أضف رسمين بينيين «・» كل إطارين للوصول إلى A②!",
+   "explanation": "مثالي! بعد عرض A① بثبات بتثبيت من 6 إطارات (① في الإطار 1 + خطوط التثبيت في الإطارات 2–6)، فإن إدخال رسمين بينيين «・» كل إطارين نحو A② يمنح انطلاقة حادة بعد التوقف.\n\n*يجوز كتابة خط التثبيت في أول إطار من المنطقة فقط (الإطار 2) مع ترك الباقي فارغًا، أو رسمه عبر المنطقة كلها (الإطارات 2–6)!"
+  }
+ },
+ "th": {
+  "1": {
+   "tag": "ทุก 3 เฟรม",
+   "title": "ข้อ 1: ทุก 3 เฟรม",
+   "description": "กรอกไทม์ชีตให้มีภาพอินบีทวีน 3 แผ่นระหว่างคีย์เฟรม A① ถึง A② (ทุก 3 เฟรม)\n(※วางคีย์เฟรม “①” ที่เฟรม 1)",
+   "hint": "“ทุก 3 เฟรม” คือการแสดงภาพ 1 แผ่นนาน 3 เฟรม ใส่ “①” ที่เฟรม 1 เว้นเฟรม 2–3 ให้ว่าง แล้วใส่ภาพอินบีทวีนแผ่นแรก “・” ที่เฟรม 4 จากนั้นวางแบบเดียวกันทุก 3 เฟรม!",
+   "explanation": "ยอดเยี่ยม! นี่คือรูปแบบพื้นฐานของ “ทุก 3 เฟรม” ซึ่งเป็นจังหวะที่ใช้บ่อยที่สุดในอนิเมะทีวีญี่ปุ่น\n・เฟรม 1–3: คีย์เฟรม ① (3 เฟรม)\n・เฟรม 4–6: อินบีทวีนแผ่นที่ 1 (3 เฟรม)\n・เฟรม 7–9: อินบีทวีนแผ่นที่ 2 (3 เฟรม)\n・เฟรม 10–12: อินบีทวีนแผ่นที่ 3 (3 เฟรม)\n・เฟรม 13 เป็นต้นไป: คีย์เฟรม ②\nการเว้นว่าง 2 เฟรมระหว่างเครื่องหมายทำให้เกิดจังหวะที่ภาพเปลี่ยนทุก 3 เฟรม!"
+  },
+  "2": {
+   "tag": "ทุก 2 เฟรม",
+   "title": "ข้อ 2: ทุก 2 เฟรม",
+   "description": "กรอกไทม์ชีตให้มีภาพอินบีทวีน 2 แผ่นระหว่างคีย์เฟรม A① ถึง A② (ทุก 2 เฟรม)\n(※วางคีย์เฟรม “①” ที่เฟรม 1)",
+   "hint": "“ทุก 2 เฟรม” คือการแสดงภาพ 1 แผ่นนาน 2 เฟรม ใส่ “①” ที่เฟรม 1 เว้นเฟรม 2 ให้ว่าง ใส่ภาพอินบีทวีนแผ่นแรก “・” ที่เฟรม 3 แผ่นที่สอง “・” ที่เฟรม 5 แล้วใส่คีย์เฟรม “②” ที่เฟรม 7!",
+   "explanation": "เป๊ะเลย! “ทุก 2 เฟรม” ใช้ภาพ 12 แผ่นต่อวินาที จึงใช้บ่อยกับฉากแอ็กชันและการแสดงในชีวิตประจำวันที่ลื่นไหล\n・เฟรม 1–2: คีย์เฟรม ① (2 เฟรม)\n・เฟรม 3–4: อินบีทวีนแผ่นที่ 1 (2 เฟรม)\n・เฟรม 5–6: อินบีทวีนแผ่นที่ 2 (2 เฟรม)\n・เฟรม 7 เป็นต้นไป: คีย์เฟรม ②\nเคล็ดลับคือจังหวะสม่ำเสมอแบบข้ามทีละ 1 เฟรม!"
+  },
+  "3": {
+   "tag": "ทุกเฟรม",
+   "title": "ข้อ 3: ทุกเฟรม",
+   "description": "กรอกไทม์ชีตให้มีภาพอินบีทวีน 3 แผ่นระหว่างคีย์เฟรม A① ถึง A② (ทุกเฟรม)\n(※วางคีย์เฟรม “①” ที่เฟรม 1)",
+   "hint": "“ทุกเฟรม” คือการเปลี่ยนภาพทุกเฟรมที่ 24fps อย่าเว้นว่าง เรียง “①” “・” “・” “・” “②” ต่อกันตั้งแต่เฟรม 1 เลย!",
+   "explanation": "ถูกต้อง! “ทุกเฟรม (ฟูลอนิเมชัน)” เปลี่ยนภาพทุกเฟรม จึงใช้กับฉากแอ็กชันดุเดือด การแพนกล้องเร็ว เอฟเฟกต์ เป็นต้น\n・เฟรม 1: คีย์เฟรม ①\n・เฟรม 2: อินบีทวีนแผ่นที่ 1\n・เฟรม 3: อินบีทวีนแผ่นที่ 2\n・เฟรม 4: อินบีทวีนแผ่นที่ 3\n・เฟรม 5 เป็นต้นไป: คีย์เฟรม ②\nลองสัมผัสความเร็วที่พุ่งผ่านในแค่ 5 เฟรมจากตัวอย่าง!"
+  },
+  "4": {
+   "tag": "จังหวะผสม",
+   "title": "ข้อ 4: จังหวะผสม",
+   "description": "วางคีย์เฟรม “①” ที่เฟรม 1 เริ่มด้วย “ทุก 3 เฟรม” จากนั้นให้อินบีทวีนแผ่นแรกเป็น “ทุก 2 เฟรม” และแผ่นที่สองเป็น “ทุกเฟรม” เพื่อไปถึงคีย์เฟรม “②” (อินบีทวีน 2 แผ่น)",
+   "hint": "เฟรม 1: “①” (ทุก 3 เฟรม จึงแสดงเฟรม 1–3) → เฟรม 4: อินบีทวีนแผ่นแรก “・” (ทุก 2 เฟรม จึงแสดงเฟรม 4–5) → เฟรม 6: อินบีทวีนแผ่นที่สอง “・” (ทุกเฟรม จึงแสดงแค่เฟรม 6) → เฟรม 7: คีย์เฟรม “②”!",
+   "explanation": "สุดยอด! นี่คือจังหวะผสมที่ค่อย ๆ ถี่ขึ้น: ทุก 3 เฟรม → ทุก 2 เฟรม → ทุกเฟรม!\n・เฟรม 1–3 (ทุก 3 เฟรม): คีย์เฟรม ①\n・เฟรม 4–5 (ทุก 2 เฟรม): อินบีทวีนแผ่นที่ 1\n・เฟรม 6 (ทุกเฟรม): อินบีทวีนแผ่นที่ 2\n・เฟรม 7: ถึงคีย์เฟรม ②!"
+  },
+  "5": {
+   "tag": "เริ่มขยับจากโฮลด์",
+   "title": "ข้อ 5: เริ่มขยับจากโฮลด์",
+   "description": "แสดง A① แบบโฮลด์ 6 เฟรมก่อน จากนั้นใส่อินบีทวีน 2 แผ่น (ทุก 2 เฟรม) เพื่อไปถึง A②\n(※วางคีย์เฟรม “①” ที่เฟรม 1 เส้นโฮลด์จะวาดแค่เฟรมแรกของช่วงก็ได้ หรือวาดตลอดช่วงก็ได้ ทั้งสองแบบถูกต้อง)",
+   "hint": "ใส่ “①” ที่เฟรม 1 แล้วทำให้ 5 เฟรมถัดไป (เฟรม 2–6) เป็นโฮลด์ (เส้นโฮลด์ “｜”) เพื่อแสดง A① รวม 6 เฟรม เส้นโฮลด์จะใส่แค่เฟรมแรกของช่วง (เฟรม 2) ก็ได้ หรือใส่ทุกเฟรม 2–6 ก็ได้ ทั้งสองแบบถูกต้อง! จากนั้นใส่อินบีทวีน “・” 2 แผ่นแบบทุก 2 เฟรมเพื่อไปถึง A②!",
+   "explanation": "สมบูรณ์แบบ! หลังจากแสดง A① อย่างมั่นคงด้วยโฮลด์ 6 เฟรม (① ที่เฟรม 1 + เส้นโฮลด์เฟรม 2–6) แล้วใส่อินบีทวีน “・” 2 แผ่นแบบทุก 2 เฟรมไปถึง A② จะได้การเริ่มขยับที่คมชัดหลังการหยุดนิ่ง\n\n※เส้นโฮลด์จะเขียนแค่เฟรมแรกของช่วง (เฟรม 2) แล้วเว้นที่เหลือว่างก็ได้ หรือวาดตลอดช่วง (เฟรม 2–6) ก็ได้ ทั้งสองแบบถูกต้อง!"
+  }
+ }
+};
+        let S = STR.ja;
+        function F(tpl, map) { return String(tpl).replace(/\{(\w+)\}/g, function (_, k) { return map[k]; }); }
 
         // ==========================================
         // 1. 指示書きパーツ（スタンプ）定義（※消しゴムは廃止）
@@ -588,7 +1510,7 @@
                             : 'bg-white/15 text-emerald-100 hover:bg-white/25'
                 }`;
                 btn.innerHTML = `
-                    <span>第${prob.id}問</span>
+                    <span>${F(S.stage, { n: prob.id })}</span>
                     ${isSolved ? '<span class="text-amber-300">★</span>' : ''}
                 `;
                 btn.addEventListener('click', () => {
@@ -611,14 +1533,14 @@
             feedbackPanelEl.classList.add('hidden');
             certificatePanelEl.classList.add('hidden');
             hintBoxEl.classList.add('hidden');
-            btnToggleHint.innerHTML = '<span>💡 ヒントを見る</span>';
+            btnToggleHint.innerHTML = `<span>${S.hintShow}</span>`;
 
             // テキスト反映
-            problemBadgeEl.textContent = `第${prob.id}問 / 全${PROBLEMS.length}問`;
+            problemBadgeEl.textContent = F(S.probBadge, { n: prob.id, total: PROBLEMS.length });
             problemTagEl.textContent = prob.tag;
             problemTitleEl.textContent = prob.title;
             problemDescEl.textContent = prob.description;
-            hintBoxEl.textContent = `【ヒント】${prob.hint}`;
+            hintBoxEl.textContent = `${S.hintPrefix}${prob.hint}`;
 
             renderStageSelector();
             renderPalette();
@@ -739,7 +1661,7 @@
                     const st = STAMP_TYPES[currentVal];
                     if (currentVal === 'HOLD') {
                         // 縦線（止め指示）のビジュアル描画
-                        colCell.innerHTML = `<div class="hold-line-visual" title="止め線 (｜)"></div>`;
+                        colCell.innerHTML = `<div class="hold-line-visual" title="${st.label}"></div>`;
                     } else {
                         colCell.innerHTML = `<span class="pencil-mark text-lg leading-none ${st.colorClass}">${st.symbol}</span>`;
                     }
@@ -786,12 +1708,12 @@
 
                 const selectEl = document.createElement('select');
                 selectEl.className = 'cell-select w-full h-7 text-xs font-bold bg-white/90 border border-[#2d4c38]/40 rounded px-1.5 pr-5 text-gray-800 focus:outline-none focus:border-[#2d4c38] cursor-pointer';
-                selectEl.ariaLabel = `${frame}コマ目の指示を選択`;
+                selectEl.ariaLabel = F(S.selectAria, { f: frame });
 
                 // 空白オプション
                 const emptyOpt = document.createElement('option');
                 emptyOpt.value = '';
-                emptyOpt.textContent = '（空白）';
+                emptyOpt.textContent = S.blank;
                 selectEl.appendChild(emptyOpt);
 
                 selectOptions.forEach(optId => {
@@ -817,7 +1739,7 @@
                         : 'text-transparent pointer-events-none'
                 }`;
                 clearBtn.textContent = '×';
-                clearBtn.title = `${frame}コマ目を空白にする`;
+                clearBtn.title = F(S.clearTitle, { f: frame });
                 clearBtn.addEventListener('click', () => {
                     applyStampToFrame(frame, '');
                 });
@@ -893,10 +1815,10 @@
                 const isHidden = hintBoxEl.classList.contains('hidden');
                 if (isHidden) {
                     hintBoxEl.classList.remove('hidden');
-                    btnToggleHint.innerHTML = '<span>💡 ヒントを隠す</span>';
+                    btnToggleHint.innerHTML = `<span>${S.hintHide}</span>`;
                 } else {
                     hintBoxEl.classList.add('hidden');
-                    btnToggleHint.innerHTML = '<span>💡 ヒントを見る</span>';
+                    btnToggleHint.innerHTML = `<span>${S.hintShow}</span>`;
                 }
             });
 
@@ -990,11 +1912,11 @@
                     } else {
                         let msg = '';
                         if (f === range.start && !sheetData[f]) {
-                            msg = `・${f}コマ目にホールド線「｜」を入れて止めを開始してください。`;
+                            msg = F(S.errHoldStart, { f: f });
                         } else if (sheetData[f] && sheetData[f] !== 'HOLD') {
-                            msg = `・${f}コマ目はホールド区間です（縦線「｜」または空白にします）。`;
+                            msg = F(S.errHoldZone, { f: f });
                         } else {
-                            msg = `・${range.start}〜${range.end}コマ目のホールド指示（最初の${range.start}コマ目だけに「｜」、または${range.start}〜${range.end}コマ目すべてに「｜」）を確認してください。`;
+                            msg = F(S.errHoldRange, { s: range.start, e: range.end });
                         }
                         holdFrameStatus[f] = {
                             isValid: false,
@@ -1035,11 +1957,11 @@
                     validationHighlights[f] = 'wrong';
 
                     if (solVal !== null && userVal === null) {
-                        errorDetails.push(`・${f}コマ目に「${STAMP_TYPES[solVal].label}」が必要です。`);
+                        errorDetails.push(F(S.errNeed, { f: f, label: STAMP_TYPES[solVal].label }));
                     } else if (solVal === null && userVal !== null) {
-                        errorDetails.push(`・${f}コマ目は空白（直前の絵を引っ張る）にする場所です。`);
+                        errorDetails.push(F(S.errBlank, { f: f }));
                     } else {
-                        errorDetails.push(`・${f}コマ目の記号が違います（正解は「${STAMP_TYPES[solVal].label}」）。`);
+                        errorDetails.push(F(S.errWrong, { f: f, label: STAMP_TYPES[solVal].label }));
                     }
                 }
             }
@@ -1056,7 +1978,7 @@
                 feedbackPanelEl.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-950');
                 feedbackIconEl.className = 'w-10 h-10 rounded-full flex items-center justify-center text-xl shrink-0 font-bold bg-emerald-600 text-white';
                 feedbackIconEl.textContent = '○';
-                feedbackTitleEl.textContent = '合格！完璧なタイムシートです！';
+                feedbackTitleEl.textContent = S.passTitle;
                 feedbackMessageEl.textContent = prob.explanation;
 
                 if (currentProblemIndex < PROBLEMS.length - 1) {
@@ -1075,13 +1997,13 @@
                 feedbackPanelEl.classList.add('bg-red-50', 'border-red-400', 'text-red-950');
                 feedbackIconEl.className = 'w-10 h-10 rounded-full flex items-center justify-center text-xl shrink-0 font-bold bg-[#d93829] text-white';
                 feedbackIconEl.textContent = '×';
-                feedbackTitleEl.textContent = 'リテイク！コマの打ち方を見直しましょう';
+                feedbackTitleEl.textContent = S.failTitle;
                 btnNextProblem.classList.add('hidden');
                 certificatePanelEl.classList.add('hidden');
 
                 const topErrors = errorDetails.slice(0, 4).join('\n');
-                const moreCount = errorDetails.length > 4 ? `\n（ほか ${errorDetails.length - 4} 箇所の修正点があります）` : '';
-                feedbackMessageEl.textContent = `赤くハイライトされたコマを確認してください：\n${topErrors}${moreCount}`;
+                const moreCount = errorDetails.length > 4 ? `\n${F(S.more, { n: errorDetails.length - 4 })}` : '';
+                feedbackMessageEl.textContent = `${S.failIntro}\n${topErrors}${moreCount}`;
             }
         }
 
@@ -1122,7 +2044,7 @@
             isPlaying = true;
             currentPlayFrame = 1;
             playStartTime = performance.now();
-            playTextEl.textContent = '停止';
+            playTextEl.textContent = S.stop;
             recDotEl.className = 'w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block';
 
             updatePlaybackStep(1);
@@ -1153,10 +2075,10 @@
             isPlaying = false;
             currentPlayFrame = 0;
             setPlayingRowHighlight(0);
-            playTextEl.textContent = '動きを確認';
+            playTextEl.textContent = S.play;
             recDotEl.className = 'w-2.5 h-2.5 rounded-full bg-gray-500 inline-block';
             previewFrameLabelEl.textContent = 'FRAME: -- / 24';
-            previewOverlayLabelEl.textContent = '待機中';
+            previewOverlayLabelEl.textContent = S.idle;
             drawPreviewFrame(0);
         }
 
@@ -1241,7 +2163,7 @@
 
             // targetFrame時点での絵のインデックス・ラベル・ホールド状態を追跡
             let drawingIndex = -1;
-            let currentLabel = '未記入';
+            let currentLabel = S.unfilled;
             let isHold = false;
             let isKeyFrame = false;
 
@@ -1254,7 +2176,7 @@
                     isKeyFrame = true;
                 } else if (s === 'INBETWEEN') {
                     drawingIndex++;
-                    currentLabel = '中割り (・)';
+                    currentLabel = STAMP_TYPES['INBETWEEN'].label;
                     isHold = false;
                     isKeyFrame = false;
                 } else if (s === 'HOLD') {
@@ -1263,7 +2185,7 @@
             }
 
             if (drawingIndex < 0) {
-                previewOverlayLabelEl.textContent = `${targetFrame}コマ目: 未記入`;
+                previewOverlayLabelEl.textContent = F(S.frameStatus, { f: targetFrame, status: S.unfilled });
                 return;
             }
 
@@ -1280,8 +2202,8 @@
 
             drawBall(ctx, ballX, centerY, symbolText, ballColor, isHold);
 
-            const statusText = isHold ? `${currentLabel}（ホールド中｜）` : currentLabel;
-            previewOverlayLabelEl.textContent = `${targetFrame}コマ目: ${statusText}`;
+            const statusText = isHold ? `${currentLabel}${S.holdSuffix}` : currentLabel;
+            previewOverlayLabelEl.textContent = F(S.frameStatus, { f: targetFrame, status: statusText });
         }
 
         function drawBall(ctx, x, y, text, color, isHold) {
@@ -1316,6 +2238,99 @@
 
         // アプリ起動
         window.addEventListener('DOMContentLoaded', init);
+    </script>
+    <script>
+        // 全体多言語（v14）: タイトル横のボタンでUI・パーツ・問題・採点文・クレジットすべてを切り替える
+        (function () {
+            var KEY = 'timesheet_lang';
+            var OLD_KEY = 'timesheet_credit_lang';
+            var HTML_LANG = { ja: 'ja', en: 'en', ko: 'ko', zh: 'zh-CN', fr: 'fr', es: 'es', ar: 'ar', th: 'th' };
+            // 日本語のパーツ名・問題文は、翻訳で上書きする前に原本を控える
+            var JA_STAMPS = {};
+            Object.keys(STAMP_TYPES).forEach(function (id) { JA_STAMPS[id] = { label: STAMP_TYPES[id].label, sub: STAMP_TYPES[id].sub }; });
+            var JA_PROBS = {};
+            PROBLEMS.forEach(function (p) { JA_PROBS[p.id] = { tag: p.tag, title: p.title, description: p.description, hint: p.hint, explanation: p.explanation }; });
+
+            function setText(id, text) { var el = document.getElementById(id); if (el) el.textContent = text; }
+
+            function applyStatic() {
+                document.title = S.docTitle;
+                setText('hdr-title', S.title);
+                setText('hdr-fps', S.fps);
+                var rb = document.getElementById('btn-reset-progress');
+                if (rb) { rb.textContent = S.reset; rb.title = S.resetTitle; }
+                setText('palette-title', S.paletteTitle);
+                setText('palette-note', S.paletteNote);
+                setText('sheet-chip', S.sheetChip);
+                setText('col-frame', S.colFrame);
+                setText('col-key', S.colKey);
+                setText('col-select', S.colSelect);
+                setText('sheet-note', S.sheetNote);
+                setText('btn-clear-all', S.clearSheet);
+                setText('preview-title', S.previewTitle);
+                setText('judge-title', S.judgeTitle);
+                setText('judge-desc', S.judgeDesc);
+                setText('check-text', S.check);
+                var pb = document.getElementById('btn-play');
+                if (pb) pb.title = S.playTitle;
+                if (!isPlaying) setText('play-text', S.play);
+                setText('next-text', S.next);
+                setText('cert-title', S.certTitle);
+                var cb = document.getElementById('cert-body');
+                if (cb) cb.innerHTML = S.certBody.replace(/\n/g, '<br>');
+                setText('btn-replay-from-start', S.replay);
+                setText('rules-title', S.rulesTitle);
+                setText('rule-key', S.ruleKey);
+                setText('rule-inb', S.ruleInb);
+                setText('rule-hold', S.ruleHold);
+                setText('rule-blank', S.ruleBlank);
+                setText('rule-blank-sym', S.blank.replace(/[（）()]/g, ''));
+                setText('credit-name', S.creditName);
+                setText('credit-contact', S.creditContact);
+                var cf = document.getElementById('credit-footer');
+                if (cf) cf.setAttribute('dir', document.documentElement.lang === 'ar' ? 'rtl' : 'ltr');
+            }
+
+            function applyLang(lang, rerender) {
+                if (!STR[lang]) lang = 'ja';
+                S = STR[lang];
+                document.documentElement.lang = HTML_LANG[lang];
+                document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+                Object.keys(STAMP_TYPES).forEach(function (id) {
+                    var t = lang === 'ja' ? JA_STAMPS[id] : (STAMP_T[lang] && STAMP_T[lang][id]);
+                    if (t) { STAMP_TYPES[id].label = t.label; STAMP_TYPES[id].sub = t.sub; }
+                });
+                PROBLEMS.forEach(function (p) {
+                    var t = lang === 'ja' ? JA_PROBS[p.id] : (PROB_T[lang] && PROB_T[lang][p.id]);
+                    if (t) { p.tag = t.tag; p.title = t.title; p.description = t.description; p.hint = t.hint; p.explanation = t.explanation; }
+                });
+                applyStatic();
+                var btns = document.querySelectorAll('.credit-langb');
+                for (var i = 0; i < btns.length; i++) {
+                    btns[i].classList.toggle('on', btns[i].getAttribute('data-clang') === lang);
+                }
+                try { localStorage.setItem(KEY, lang); } catch (e) {}
+                if (rerender) {
+                    // 記入内容を保ったまま再描画する
+                    var savedSheet = sheetData;
+                    loadProblem(currentProblemIndex);
+                    sheetData = savedSheet;
+                    renderTimesheet();
+                    drawPreviewFrame(0);
+                    setText('preview-overlay-label', S.idle);
+                }
+            }
+
+            var initial = 'ja';
+            try { initial = localStorage.getItem(KEY) || localStorage.getItem(OLD_KEY) || 'ja'; } catch (e) {}
+            var btns = document.querySelectorAll('.credit-langb');
+            for (var i = 0; i < btns.length; i++) {
+                (function (b) {
+                    b.addEventListener('click', function () { applyLang(b.getAttribute('data-clang'), true); });
+                })(btns[i]);
+            }
+            applyLang(initial, false);
+        })();
     </script>
 </body>
 </html>
